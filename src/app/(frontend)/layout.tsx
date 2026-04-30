@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { cn } from 'src/utilities/cn'
+import { cn } from '@/utilities/cn'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import React from 'react'
@@ -8,18 +8,28 @@ import React from 'react'
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
+import { headers } from 'next/headers'
+import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { notFound } from 'next/navigation'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  console.log('Host:', host)
+  const tenant = await fetchTenantByDomain(host)
 
+  if (!tenant) {
+    return notFound()
+  }
+  console.log('RENDERING ROOT LAYOUT')
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
@@ -34,11 +44,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               preview: isEnabled,
             }}
           />
-          <LivePreviewListener />
 
-          <Header />
+          <Header tenant={tenant} />
           {children}
-          <Footer />
+          <Footer tenant={tenant} />
         </Providers>
       </body>
     </html>

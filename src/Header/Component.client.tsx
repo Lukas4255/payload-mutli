@@ -4,16 +4,17 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
-import type { Header } from '@/payload-types'
+import type { Header, Tenant } from '@/payload-types'
 
 import { Logo } from '@/components/Logo/Logo'
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
-  header: Header
+  tenant: Tenant
+  data: Header
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ header }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({ tenant, data }) => {
   /* Storing the value in a useState to avoid hydration errors */
   const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
@@ -31,11 +32,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ header }) => {
 
   return (
     <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
-      <div className="py-8 border-b border-border flex justify-between">
+      <div className="py-8 flex justify-between">
         <Link href="/">
-          <Logo loading="eager" priority="high" className="invert dark:invert-0" />
+          <Logo tenant={tenant} loading="eager" priority="high" className="" />
         </Link>
-        <HeaderNav header={header} />
+        <HeaderNav data={data} />
       </div>
     </header>
   )

@@ -1,11 +1,11 @@
-import type { GlobalAfterChangeHook } from 'payload'
+import type { CollectionAfterChangeHook } from 'payload'
 
 import { revalidateTag } from 'next/cache'
 
-export const revalidateHeader: GlobalAfterChangeHook = ({ doc, req: { payload } }) => {
+export const revalidateHeader: CollectionAfterChangeHook = ({ doc, req: { payload } }) => {
   payload.logger.info(`Revalidating header`)
 
-  revalidateTag('global_header', 'max')
+  revalidateTag('Collection_header', 'max')
 
   return doc
 }

@@ -62,10 +62,29 @@ export const hero: Field = {
       name: 'media',
       type: 'upload',
       admin: {
-        condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
+        condition: (_, { type } = {}) => type === 'mediumImpact',
       },
       relationTo: 'media',
       required: true,
+    },
+    {
+      name: 'images',
+      type: 'array',
+      label: 'Images',
+      minRows: 1,
+      maxRows: 5,
+      admin: {
+        condition: (_, { type } = {}) => type === 'highImpact',
+        description: 'Add up to 5 images. Each will be displayed square with a slight rotation.',
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+      ],
     },
   ],
   label: false,

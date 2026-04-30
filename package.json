@@ -27,6 +27,7 @@
     "@payloadcms/live-preview-react": "3.82.1",
     "@payloadcms/next": "3.82.1",
     "@payloadcms/plugin-form-builder": "3.82.1",
+    "@payloadcms/plugin-multi-tenant": "^3.82.1",
     "@payloadcms/plugin-nested-docs": "3.82.1",
     "@payloadcms/plugin-redirects": "3.82.1",
     "@payloadcms/plugin-search": "3.82.1",
@@ -56,20 +57,20 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
     "@next/eslint-plugin-next": "16.2.3",
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4.2.4",
     "@tailwindcss/typography": "^0.5.15",
     "@types/escape-html": "^1.0.4",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "22.5.4",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "autoprefixer": "^10.4.20",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.2.3",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
-    "tailwindcss": "^3.4.16",
+    "tailwindcss": "^4.2.4",
     "typescript": "5.7.2"
   },
   "engines": {
