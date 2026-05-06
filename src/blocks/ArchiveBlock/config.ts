@@ -7,10 +7,35 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { link } from '@/fields/link'
+
 export const Archive: Block = {
   slug: 'archive',
   interfaceName: 'ArchiveBlock',
   fields: [
+    {
+      name: 'eyebrow',
+      type: 'text',
+      label: 'Eyebrow',
+      admin: {
+        description: 'Small label shown above the heading, e.g. "Verhalen"',
+      },
+    },
+    {
+      name: 'heading',
+      type: 'text',
+      label: 'Heading',
+    },
+    link({
+      appearances: false,
+      overrides: {
+        name: 'link',
+        label: 'Header Link',
+        admin: {
+          description: 'Link shown on the right side of the header, e.g. "Meer verhalen →"',
+        },
+      },
+    }),
     {
       name: 'introContent',
       type: 'richText',
@@ -25,6 +50,9 @@ export const Archive: Block = {
         },
       }),
       label: 'Intro Content',
+      admin: {
+        description: 'Optional rich text shown below the header',
+      },
     },
     {
       name: 'populateBy',

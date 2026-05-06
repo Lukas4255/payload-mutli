@@ -24,6 +24,7 @@ const collections: CollectionSlug[] = [
   'form-submissions',
   'search'
 ]
+// @ts-ignore – in this multi-tenant setup header/footer are collections, not Payload globals
 const globals: GlobalSlug[] = ['header', 'footer']
 
 const seedDirectory = path.dirname(fileURLToPath(import.meta.url))
@@ -106,7 +107,7 @@ export const seed = async ({
 
     // clear the database
     for (const global of globals) {
-      await payload.updateGlobal({
+      await (payload as any).updateGlobal({
         slug: global,
         data: {
           navItems: []
@@ -399,7 +400,7 @@ export const seed = async ({
     // Update header
     payload.logger.info(`- Seeding header...`)
 
-    await payload.updateGlobal({
+    await (payload as any).updateGlobal({
       slug: 'header',
       data: {
         navItems: [
@@ -427,7 +428,7 @@ export const seed = async ({
     // Update footer
     payload.logger.info(`- Seeding footer...`)
 
-    await payload.updateGlobal({
+    await (payload as any).updateGlobal({
       slug: 'footer',
       data: {
         navItems: [

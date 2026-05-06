@@ -9,6 +9,7 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    qualities: [75, 100],
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
@@ -34,6 +35,7 @@ const nextConfig = {
 
     return webpackConfig
   },
+  allowedDevOrigins: ['dorpshuistavenu.nl'],
   reactStrictMode: true,
   redirects,
 
@@ -64,4 +66,6 @@ const nextConfig = {
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+const payloadConfig = withPayload(nextConfig, { devBundleServerPackages: false })
+payloadConfig.images = { ...payloadConfig.images, qualities: [75, 100] }
+export default payloadConfig

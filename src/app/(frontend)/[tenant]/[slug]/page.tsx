@@ -10,6 +10,7 @@ import { homeStatic } from '@/endpoints/seed/home-static'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
@@ -87,6 +88,13 @@ const queryPageBySlug = cache(
     const { isEnabled: draft } = await draftMode()
     const payload = await getPayload({ config: configPromise })
 
+    // Resolve tenant ID first — avoids cross-relation dot-notation which
+    // Drizzle cannot resolve when access control restricts the related collection.
+    // fetchTenantByDomain is memoised via React cache(), so this hits the DB
+    // only once per request even when called from both layout and page.
+    const tenant = await fetchTenantByDomain(tenantDomain)
+    if (!tenant) return null
+
     const result = await payload.find({
       collection: 'pages',
       draft,
@@ -94,7 +102,7 @@ const queryPageBySlug = cache(
       pagination: false,
       overrideAccess: draft,
       where: {
-        and: [{ slug: { equals: slug } }, { 'tenant.domain': { equals: tenantDomain } }],
+        and: [{ slug: { equals: slug } }, { 'tenant.id': { equals: tenant.id } }],
       },
     })
 

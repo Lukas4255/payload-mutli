@@ -93,15 +93,39 @@ export const plugins: Plugin[] = [
   }),
   multiTenantPlugin<Config>({
     collections: {
-      pages: {},
-      posts: {},
-      header: {
-        isGlobal: true,
+      // ── Content ─────────────────────────────────────────────────
+      pages: {
+        tenantFieldOverrides: {
+          admin: { disableListColumn: false, disableListFilter: false },
+        },
       },
-      footer: {
-        isGlobal: true,
+      posts: {
+        tenantFieldOverrides: {
+          admin: { disableListColumn: false, disableListFilter: false },
+        },
       },
+      vacancies: {
+        tenantFieldOverrides: {
+          admin: { disableListColumn: false, disableListFilter: false },
+        },
+      },
+
+      // ── Globals (per-tenant singletons) ─────────────────────────
+      header: { isGlobal: true },
+      footer: { isGlobal: true },
+
+      // ── Supporting collections ───────────────────────────────────
       media: {},
+
+      // Search index — scoped so each tenant only sees their own results
+      search: {},
+
+      // Redirects — scoped so editors only manage their own tenant's redirects
+      redirects: {},
+
+      // Forms and submissions — scoped per tenant
+      forms: {},
+      'form-submissions': {},
     },
     tenantsArrayField: {
       includeDefaultField: false,

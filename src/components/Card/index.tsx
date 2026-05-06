@@ -2,13 +2,13 @@
 import { cn } from '@/utilities/cn'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
-import React, { Fragment } from 'react'
+import React from 'react'
+import { Clock } from 'lucide-react'
 
 import type { Post } from '@/payload-types'
-
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'publishedAt' | 'readTime'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -19,65 +19,67 @@ export const Card: React.FC<{
   title?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
-  const { className, doc, relationTo, showCategories, title: titleFromProps } = props
+  const { className, doc, relationTo, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, title, readTime } = doc || {}
+  const { image: metaImage } = meta || {}
 
-  const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
-  const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
+
+  // Use the first category title as the pill label, fallback to 'Artikel'
+  const firstCategory = Array.isArray(categories) && categories.length > 0
+    ? categories[0]
+    : null
+  const pillLabel = (firstCategory && typeof firstCategory === 'object' && firstCategory.title)
+    ? firstCategory.title
+    : 'Artikel'
 
   return (
     <article
-      className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
-        className,
-      )}
+      className={cn('hover:cursor-pointer group', className)}
       ref={card.ref}
     >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+      {/* Image — fully rounded on all corners */}
+      <div className="relative w-full h-72 overflow-hidden rounded-2xl mb-5">
+        {metaImage && typeof metaImage !== 'string' ? (
+          <Media
+            fill
+            resource={metaImage}
+            imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
+            size="33vw"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted rounded-2xl" />
+        )}
       </div>
-      <div className="p-4">
-        {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
-            {showCategories && hasCategories && (
-              <div>
-                {categories?.map((category, index) => {
-                  if (typeof category === 'object') {
-                    const { title: titleFromCategory } = category
 
-                    const categoryTitle = titleFromCategory || 'Untitled category'
+      {/* Content */}
+      <div>
+        {/* Meta row */}
+        <div className="flex items-center gap-3 mb-3">
+          {/* Category pill */}
+          <span className="inline-flex items-center border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">
+            {pillLabel}
+          </span>
 
-                    const isLast = index === categories.length - 1
+          {/* Read time */}
+          {readTime && (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock size={12} />
+              {readTime} min. leestijd
+            </span>
+          )}
+        </div>
 
-                    return (
-                      <Fragment key={index}>
-                        {categoryTitle}
-                        {!isLast && <Fragment>, &nbsp;</Fragment>}
-                      </Fragment>
-                    )
-                  }
-
-                  return null
-                })}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Title */}
         {titleToUse && (
-          <div className="prose">
-            <h3>
-              <Link className="not-prose" href={href} ref={link.ref}>
-                {titleToUse}
-              </Link>
-            </h3>
-          </div>
+          <h3 className="text-foreground font-bold text-xl leading-snug">
+            <Link className="hover:underline" href={href} ref={link.ref}>
+              {titleToUse}
+            </Link>
+          </h3>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
       </div>
     </article>
   )

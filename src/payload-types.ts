@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     comments: Comment;
     tenants: Tenant;
+    vacancies: Vacancy;
     header: Header;
     footer: Footer;
     redirects: Redirect;
@@ -94,6 +95,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
+    vacancies: VacanciesSelect<false> | VacanciesSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -169,6 +171,7 @@ export interface Page {
           link: {
             type?: ('reference' | 'custom') | null;
             newTab?: boolean | null;
+            openInPopup?: boolean | null;
             reference?: {
               relationTo: 'pages';
               value: number | Page;
@@ -178,7 +181,7 @@ export interface Page {
             /**
              * Choose how the link should be rendered.
              */
-            appearance?: ('default' | 'outline') | null;
+            appearance?: ('default' | 'outline' | 'secondary') | null;
           };
           id?: string | null;
         }[]
@@ -193,8 +196,30 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Small label shown above the heading, e.g. "Welkom"
+     */
+    eyebrow?: string | null;
+    heading?: string | null;
+    /**
+     * Short intro paragraph shown in the right column
+     */
+    introText?: string | null;
+    /**
+     * e.g. "750+ mensen per maand vinden hier hun plek"
+     */
+    socialProofText?: string | null;
+    /**
+     * Small circular avatar images shown next to the social proof text
+     */
+    socialProofAvatars?:
+      | {
+          avatar: number | Media;
+          id?: string | null;
+        }[]
+      | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | VacanciesBlock | USPBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -226,6 +251,10 @@ export interface Tenant {
    */
   slug: string;
   logo?: (number | null) | Media;
+  /**
+   * Brand color as a hex value, e.g. #cc0000
+   */
+  primaryColor?: string | null;
   /**
    * If checked, logging in is not required to read. Useful for building public pages.
    */
@@ -323,40 +352,24 @@ export interface Media {
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
-  richText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  links?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?: {
-            relationTo: 'pages';
-            value: number | Page;
-          } | null;
-          url?: string | null;
-          label: string;
-          /**
-           * Choose how the link should be rendered.
-           */
-          appearance?: ('default' | 'outline') | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  image?: (number | null) | Media;
+  heading?: string | null;
+  text?: string | null;
+  link: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    openInPopup?: boolean | null;
+    reference?: {
+      relationTo: 'pages';
+      value: number | Page;
+    } | null;
+    url?: string | null;
+    label: string;
+    /**
+     * Choose how the link should be rendered.
+     */
+    appearance?: ('default' | 'outline' | 'secondary') | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta';
@@ -388,6 +401,7 @@ export interface ContentBlock {
         link?: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
+          openInPopup?: boolean | null;
           reference?: {
             relationTo: 'pages';
             value: number | Page;
@@ -397,7 +411,7 @@ export interface ContentBlock {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline') | null;
+          appearance?: ('default' | 'outline' | 'secondary') | null;
         };
         id?: string | null;
       }[]
@@ -421,6 +435,28 @@ export interface MediaBlock {
  * via the `definition` "ArchiveBlock".
  */
 export interface ArchiveBlock {
+  /**
+   * Small label shown above the heading, e.g. "Verhalen"
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Link shown on the right side of the header, e.g. "Meer verhalen →"
+   */
+  link: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    openInPopup?: boolean | null;
+    reference?: {
+      relationTo: 'pages';
+      value: number | Page;
+    } | null;
+    url?: string | null;
+    label: string;
+  };
+  /**
+   * Optional rich text shown below the header
+   */
   introContent?: {
     root: {
       type: string;
@@ -502,6 +538,10 @@ export interface Post {
     image?: (number | null) | Media;
     description?: string | null;
   };
+  /**
+   * Estimated read time in minutes (auto-calculated on save)
+   */
+  readTime?: number | null;
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
   populatedAuthors?:
@@ -582,6 +622,7 @@ export interface FormBlock {
  */
 export interface Form {
   id: number;
+  tenant?: (number | null) | Tenant;
   title: string;
   fields?:
     | (
@@ -751,6 +792,79 @@ export interface Form {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VacanciesBlock".
+ */
+export interface VacanciesBlock {
+  /**
+   * Small label above the heading, e.g. "Wij zoeken mensen"
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  limit?: number | null;
+  /**
+   * Button shown below the cards, e.g. "Bekijk alle vacatures"
+   */
+  viewAllLink: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    openInPopup?: boolean | null;
+    reference?: {
+      relationTo: 'pages';
+      value: number | Page;
+    } | null;
+    url?: string | null;
+    label: string;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'vacanciesBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "USPBlock".
+ */
+export interface USPBlock {
+  /**
+   * Small label above the heading
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  text?: string | null;
+  /**
+   * Add up to 5 photos. First photo appears large on the left; the rest fill a 2×2 grid on the right.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add up to 3 USP columns. Each column becomes a card with a list of features.
+   */
+  columns?:
+    | {
+        title?: string | null;
+        items?:
+          | {
+              /**
+               * Enter a Font Awesome class string, e.g. "fa-solid fa-house" or "fa-brands fa-instagram". Browse icons at fontawesome.com/icons.
+               */
+              icon?: string | null;
+              title: string;
+              description?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'uspBlock';
+}
+/**
  * Comments submitted by visitors on blog posts
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -774,6 +888,52 @@ export interface Comment {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vacancies".
+ */
+export interface Vacancy {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  /**
+   * Shown as a pill on the card, e.g. "Vrijwilliger" or "Betaald"
+   */
+  vacancyType?: string | null;
+  /**
+   * Short preview text shown on the vacancy card (1–2 sentences)
+   */
+  excerpt?: string | null;
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * External link to apply, e.g. https://forms.example.com/apply
+   */
+  applyUrl?: string | null;
+  /**
+   * Alternative to URL — applicants can email this address directly
+   */
+  applyEmail?: string | null;
+  publishedAt?: string | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
 export interface Header {
@@ -784,6 +944,7 @@ export interface Header {
         link: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
+          openInPopup?: boolean | null;
           reference?: {
             relationTo: 'pages';
             value: number | Page;
@@ -804,11 +965,12 @@ export interface Header {
 export interface Footer {
   id: number;
   tenant?: (number | null) | Tenant;
-  navItems?:
+  menuItems?:
     | {
         link: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
+          openInPopup?: boolean | null;
           reference?: {
             relationTo: 'pages';
             value: number | Page;
@@ -819,6 +981,43 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  socialItems?:
+    | {
+        platform: 'instagram' | 'tiktok' | 'facebook' | 'linkedin' | 'twitter' | 'youtube';
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          openInPopup?: boolean | null;
+          reference?: {
+            relationTo: 'pages';
+            value: number | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  legalItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          openInPopup?: boolean | null;
+          reference?: {
+            relationTo: 'pages';
+            value: number | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Bijv. "© 2026 Rentree"
+   */
+  copyright?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -828,6 +1027,7 @@ export interface Footer {
  */
 export interface Redirect {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -854,6 +1054,7 @@ export interface Redirect {
  */
 export interface FormSubmission {
   id: number;
+  tenant?: (number | null) | Tenant;
   form: number | Form;
   submissionData?:
     | {
@@ -873,6 +1074,7 @@ export interface FormSubmission {
  */
 export interface Search {
   id: number;
+  tenant?: (number | null) | Tenant;
   title?: string | null;
   priority?: number | null;
   doc: {
@@ -946,6 +1148,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tenants';
         value: number | Tenant;
+      } | null)
+    | ({
+        relationTo: 'vacancies';
+        value: number | Vacancy;
       } | null)
     | ({
         relationTo: 'header';
@@ -1033,6 +1239,7 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     type?: T;
                     newTab?: T;
+                    openInPopup?: T;
                     reference?: T;
                     url?: T;
                     label?: T;
@@ -1047,6 +1254,16 @@ export interface PagesSelect<T extends boolean = true> {
               image?: T;
               id?: T;
             };
+        eyebrow?: T;
+        heading?: T;
+        introText?: T;
+        socialProofText?: T;
+        socialProofAvatars?:
+          | T
+          | {
+              avatar?: T;
+              id?: T;
+            };
       };
   layout?:
     | T
@@ -1056,6 +1273,8 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        vacanciesBlock?: T | VacanciesBlockSelect<T>;
+        uspBlock?: T | USPBlockSelect<T>;
       };
   meta?:
     | T
@@ -1076,21 +1295,19 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "CallToActionBlock_select".
  */
 export interface CallToActionBlockSelect<T extends boolean = true> {
-  richText?: T;
-  links?:
+  image?: T;
+  heading?: T;
+  text?: T;
+  link?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
-              appearance?: T;
-            };
-        id?: T;
+        type?: T;
+        newTab?: T;
+        openInPopup?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+        appearance?: T;
       };
   id?: T;
   blockName?: T;
@@ -1111,6 +1328,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              openInPopup?: T;
               reference?: T;
               url?: T;
               label?: T;
@@ -1135,6 +1353,18 @@ export interface MediaBlockSelect<T extends boolean = true> {
  * via the `definition` "ArchiveBlock_select".
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        openInPopup?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
   introContent?: T;
   populateBy?: T;
   relationTo?: T;
@@ -1157,6 +1387,58 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VacanciesBlock_select".
+ */
+export interface VacanciesBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  limit?: T;
+  viewAllLink?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        openInPopup?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "USPBlock_select".
+ */
+export interface USPBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  text?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  columns?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1172,6 +1454,7 @@ export interface PostsSelect<T extends boolean = true> {
         image?: T;
         description?: T;
       };
+  readTime?: T;
   publishedAt?: T;
   authors?: T;
   populatedAuthors?:
@@ -1346,9 +1629,29 @@ export interface TenantsSelect<T extends boolean = true> {
   domain?: T;
   slug?: T;
   logo?: T;
+  primaryColor?: T;
   allowPublicRead?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vacancies_select".
+ */
+export interface VacanciesSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  vacancyType?: T;
+  excerpt?: T;
+  description?: T;
+  applyUrl?: T;
+  applyEmail?: T;
+  publishedAt?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1364,6 +1667,7 @@ export interface HeaderSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              openInPopup?: T;
               reference?: T;
               url?: T;
               label?: T;
@@ -1379,7 +1683,7 @@ export interface HeaderSelect<T extends boolean = true> {
  */
 export interface FooterSelect<T extends boolean = true> {
   tenant?: T;
-  navItems?:
+  menuItems?:
     | T
     | {
         link?:
@@ -1387,12 +1691,45 @@ export interface FooterSelect<T extends boolean = true> {
           | {
               type?: T;
               newTab?: T;
+              openInPopup?: T;
               reference?: T;
               url?: T;
               label?: T;
             };
         id?: T;
       };
+  socialItems?:
+    | T
+    | {
+        platform?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              openInPopup?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  legalItems?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              openInPopup?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  copyright?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1401,6 +1738,7 @@ export interface FooterSelect<T extends boolean = true> {
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
+  tenant?: T;
   from?: T;
   to?:
     | T
@@ -1417,6 +1755,7 @@ export interface RedirectsSelect<T extends boolean = true> {
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   fields?:
     | T
@@ -1550,6 +1889,7 @@ export interface FormsSelect<T extends boolean = true> {
  * via the `definition` "form-submissions_select".
  */
 export interface FormSubmissionsSelect<T extends boolean = true> {
+  tenant?: T;
   form?: T;
   submissionData?:
     | T
@@ -1566,6 +1906,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
  * via the `definition` "search_select".
  */
 export interface SearchSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   priority?: T;
   doc?: T;

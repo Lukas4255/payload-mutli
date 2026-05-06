@@ -5,7 +5,7 @@ export const beforeSyncWithSearch: BeforeSync = async ({ originalDoc, searchDoc,
     doc: { relationTo: collection },
   } = searchDoc
 
-  const { slug, id, categories, title, meta, excerpt } = originalDoc
+  const { slug, id, categories, title, meta, excerpt, tenant } = originalDoc
 
   const modifiedDoc: DocToSync = {
     ...searchDoc,
@@ -38,6 +38,15 @@ export const beforeSyncWithSearch: BeforeSync = async ({ originalDoc, searchDoc,
         `Failed. Category not found when syncing collection '${collection}' with id: '${id}' to search.`,
       )
     }
+  }
+
+  // Copy tenant from the source document so search results stay scoped to the
+  // correct tenant. The multi-tenant plugin adds a `tenant` relationship field
+  // to the search collection; we resolve the raw ID to avoid storing a
+  // populated object, which would fail the relationship constraint.
+  const tenantId = typeof tenant === 'number' ? tenant : tenant?.id
+  if (tenantId) {
+    ;(modifiedDoc as Record<string, unknown>).tenant = tenantId
   }
 
   return modifiedDoc

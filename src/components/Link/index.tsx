@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from 'src/utilities/cn'
 import Link from 'next/link'
@@ -11,6 +13,7 @@ type CMSLinkType = {
   className?: string
   label?: string | null
   newTab?: boolean | null
+  openInPopup?: boolean | null
   reference?: {
     relationTo: 'pages' | 'posts'
     value: Page | Post | string | number
@@ -28,6 +31,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     className,
     label,
     newTab,
+    openInPopup,
     reference,
     size: sizeFromProps,
     url,
@@ -43,12 +47,33 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   if (!href) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
-  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
-  /* Ensure we don't break any styles set by richText */
+  // openInPopup takes precedence over newTab
+  const newTabProps = newTab && !openInPopup ? { rel: 'noopener noreferrer', target: '_blank' } : {}
+
+  const handlePopupClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!openInPopup) return
+    e.preventDefault()
+    const width = 900
+    const height = 700
+    const left = Math.round((window.screen.width - width) / 2)
+    const top = Math.round((window.screen.height - height) / 2)
+    window.open(
+      href,
+      'cms-popup',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,popup=1`,
+    )
+  }
+
+  const linkProps = {
+    href: href || url || '',
+    onClick: openInPopup ? handlePopupClick : undefined,
+    ...newTabProps,
+  }
+
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} {...linkProps}>
         {label && label}
         {children && children}
       </Link>
@@ -57,7 +82,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} {...linkProps}>
         {label && label}
         {children && children}
       </Link>

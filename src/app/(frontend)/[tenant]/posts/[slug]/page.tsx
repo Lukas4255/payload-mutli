@@ -67,9 +67,9 @@ export default async function Post({ params: paramsPromise }: Args) {
           )}
           
           {/* Add Comments section */}
-          <div className="max-w-[48rem] mx-auto mt-16">
+          {/* <div className="max-w-[48rem] mx-auto mt-16">
             <Comments postId={typeof post.id === 'string' ? parseInt(post.id, 10) : post.id} />
-          </div>
+          </div> */}
         </div>
       </div>
     </article>

@@ -13,6 +13,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Tenants } from './collections/Tenants'
+import { Vacancies } from './collections/Vacancies'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -63,7 +64,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Comments, Tenants, Header, Footer],
+  collections: [Pages, Posts, Media, Categories, Users, Comments, Tenants, Vacancies, Header, Footer],
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [
     ...plugins,

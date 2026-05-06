@@ -41,13 +41,15 @@
   --color-warning: hsl(var(--warning));
 
   /* Border radius */
+  --radius: 0.5rem;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-source-sans-3);
   --font-mono: var(--font-geist-mono);
+  --font-heading: "aglet-sans", sans-serif;
 
   /* Breakpoints (2xl differs from v4 default of 96rem) */
   --breakpoint-2xl: 86rem;
@@ -91,6 +93,7 @@
   h6 {
     font-size: auto;
     font-weight: auto;
+    font-family: var(--font-heading);
   }
 
   :root {
@@ -103,11 +106,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 350, 100%, 43%, 1;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240, 79%, 13%, 0.07;
+    --secondary-foreground: 240, 79%, 13%, 1;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -122,7 +125,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.2rem;
+    --radius: 0.5rem;
 
     --success: 196 52% 74%;
     --warning: 34 89% 85%;

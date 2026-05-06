@@ -27,6 +27,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
 import { getServerSideURL } from '@/utilities/getURL'
+import { calculateReadTime } from '@/utilities/calculateReadTime'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -47,9 +48,12 @@ export const Posts: CollectionConfig<'posts'> = {
       image: true,
       description: true,
     },
+    readTime: true,
+    publishedAt: true,
+    tenant: true,
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'tenant', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data }) => {
         const path = generatePreviewPath({
@@ -160,6 +164,20 @@ export const Posts: CollectionConfig<'posts'> = {
           ],
         },
       ],
+    },
+    {
+      name: 'readTime',
+      type: 'number',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Estimated read time in minutes (auto-calculated on save)',
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => calculateReadTime(siblingData.content),
+        ],
+      },
     },
     {
       name: 'publishedAt',
