@@ -1,4 +1,7 @@
-import React from 'react'
+'use client'
+
+import React, { useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import type { USPBlock as USPBlockProps } from '@/payload-types'
 import { Media } from '@/components/Media'
@@ -12,6 +15,31 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
   columns,
 }) => {
   const photos = (gallery ?? []).filter((g) => g.image && typeof g.image === 'object')
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), [])
+
+  const showPrev = useCallback(() => {
+    setLightboxIndex((i) => (i !== null ? (i - 1 + photos.length) % photos.length : null))
+  }, [photos.length])
+
+  const showNext = useCallback(() => {
+    setLightboxIndex((i) => (i !== null ? (i + 1) % photos.length : null))
+  }, [photos.length])
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox()
+      if (e.key === 'ArrowLeft') showPrev()
+      if (e.key === 'ArrowRight') showNext()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightboxIndex, closeLightbox, showPrev, showNext])
 
   return (
     <section className="px-4 md:px-8 bg-gray-100 pt-20 pb-16" id={`block-${id}`}>
@@ -39,24 +67,104 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
         {photos.length > 0 && (
           <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 h-[480px] rounded-3xl overflow-hidden">
             {/* Large left image — spans both rows */}
-            <div className="row-span-2 relative overflow-hidden">
-              <Media fill resource={photos[0]!.image} imgClassName="object-cover" />
+            <div
+              className="row-span-2 relative overflow-hidden cursor-zoom-in"
+              onClick={() => setLightboxIndex(0)}
+            >
+              <Media fill resource={photos[0]!.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
             </div>
 
             {/* Top-right images (photos 2 & 3) */}
             {photos.slice(1, 3).map((photo, i) => (
-              <div key={photo.id ?? i} className="relative overflow-hidden">
-                <Media fill resource={photo.image} imgClassName="object-cover" />
+              <div
+                key={photo.id ?? i}
+                className="relative overflow-hidden cursor-zoom-in"
+                onClick={() => setLightboxIndex(i + 1)}
+              >
+                <Media fill resource={photo.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
               </div>
             ))}
 
             {/* Bottom-right images (photos 4 & 5) */}
             {photos.slice(3, 5).map((photo, i) => (
-              <div key={photo.id ?? (i + 3)} className="relative overflow-hidden">
-                <Media fill resource={photo.image} imgClassName="object-cover" />
+              <div
+                key={photo.id ?? (i + 3)}
+                className="relative overflow-hidden cursor-zoom-in"
+                onClick={() => setLightboxIndex(i + 3)}
+              >
+                <Media fill resource={photo.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
               </div>
             ))}
           </div>
+        )}
+
+        {/* ── Lightbox (portal) ───────────────────────────────── */}
+        {mounted && lightboxIndex !== null && createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            onClick={closeLightbox}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image lightbox"
+          >
+            {/* Image container — stop propagation so clicking the image doesn't close */}
+            <div
+              className="relative w-full max-w-5xl max-h-[90vh] mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl">
+                <Media
+                  fill
+                  resource={photos[lightboxIndex]!.image}
+                  imgClassName="object-contain"
+                  priority
+                />
+              </div>
+
+              {/* Counter */}
+              <p className="mt-3 text-center text-sm text-white/70">
+                {lightboxIndex + 1} / {photos.length}
+              </p>
+            </div>
+
+            {/* Close button */}
+            <button
+              className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              onClick={closeLightbox}
+              aria-label="Close lightbox"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Prev button */}
+            {photos.length > 1 && (
+              <button
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                onClick={(e) => { e.stopPropagation(); showPrev() }}
+                aria-label="Previous image"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+
+            {/* Next button */}
+            {photos.length > 1 && (
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                onClick={(e) => { e.stopPropagation(); showNext() }}
+                aria-label="Next image"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+          </div>,
+          document.body,
         )}
 
         {/* ── USP Columns ─────────────────────────────────────── */}
