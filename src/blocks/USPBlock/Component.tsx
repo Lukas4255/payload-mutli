@@ -117,7 +117,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
                   fill
                   resource={photos[lightboxIndex]!.image}
                   imgClassName="object-contain"
-                  priority
+                  loading="eager"
                 />
               </div>
 
