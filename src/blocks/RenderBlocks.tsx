@@ -10,6 +10,7 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { VacanciesBlockComponent } from '@/blocks/VacanciesBlock/Component'
 import { USPBlockComponent } from '@/blocks/USPBlock/Component'
+import { AgendaBlockComponent } from '@/blocks/AgendaBlock/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -19,6 +20,7 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   vacanciesBlock: VacanciesBlockComponent,
   uspBlock: USPBlockComponent,
+  agendaBlock: AgendaBlockComponent,
 }
 
 export const RenderBlocks: React.FC<{
