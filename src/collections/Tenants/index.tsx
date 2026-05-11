@@ -98,6 +98,38 @@ export const Tenants: CollectionConfig = {
       },
     },
     {
+      name: 'contactInfo',
+      type: 'group',
+      label: 'Contact information',
+      fields: [
+        {
+          name: 'email',
+          type: 'email',
+          label: 'E-mailadres',
+        },
+        {
+          name: 'phone',
+          type: 'text',
+          label: 'Telefoonnummer',
+        },
+        {
+          name: 'address',
+          type: 'text',
+          label: 'Adres',
+        },
+        {
+          name: 'kvk',
+          type: 'text',
+          label: 'KVK-nummer',
+        },
+        {
+          name: 'btw',
+          type: 'text',
+          label: 'BTW-nummer',
+        },
+      ],
+    },
+    {
       name: 'allowPublicRead',
       type: 'checkbox',
       admin: {

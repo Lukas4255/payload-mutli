@@ -63,6 +63,7 @@ export default async function Page({ params }: Args) {
   if (!page) return <PayloadRedirects url={`/${pageSlug}`} />
 
   const { hero, layout } = page
+  const tenantData = await fetchTenantByDomain(tenant)
 
   return (
     <article className="pt-16 pb-24">
@@ -70,7 +71,7 @@ export default async function Page({ params }: Args) {
       <PayloadRedirects disableNotFound url={`/${pageSlug}`} />
       {draft && <LivePreviewListener />}
       <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
+      <RenderBlocks blocks={layout} tenant={tenantData ?? undefined} />
     </article>
   )
 }

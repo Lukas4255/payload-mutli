@@ -65,7 +65,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
 
         {/* ── Photo Gallery ───────────────────────────────────── */}
         {photos.length > 0 && (
-          <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 h-[480px] rounded-3xl overflow-hidden">
+          <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 h-120 rounded-3xl overflow-hidden">
             {/* Large left image — spans both rows */}
             <div
               className="row-span-2 relative overflow-hidden cursor-zoom-in"
@@ -101,7 +101,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
         {/* ── Lightbox (portal) ───────────────────────────────── */}
         {mounted && lightboxIndex !== null && createPortal(
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 backdrop-blur-sm"
             onClick={closeLightbox}
             role="dialog"
             aria-modal="true"
@@ -109,7 +109,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
           >
             {/* Image container — stop propagation so clicking the image doesn't close */}
             <div
-              className="relative w-full max-w-5xl max-h-[90vh] mx-4"
+              className="relative w-full max-w-7xl max-h-[90vh] mx-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl">

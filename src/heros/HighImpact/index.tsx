@@ -1,6 +1,5 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import type { Page } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
@@ -24,11 +23,6 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   socialProofText,
   socialProofAvatars,
 }) => {
-  const { setHeaderTheme } = useHeaderTheme()
-
-  useEffect(() => {
-    setHeaderTheme('dark')
-  })
 
   return (
     <section className="relative -mt-[10.4rem] flex flex-col overflow-hidden">

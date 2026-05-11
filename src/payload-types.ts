@@ -255,6 +255,13 @@ export interface Tenant {
    * Brand color as a hex value, e.g. #cc0000
    */
   primaryColor?: string | null;
+  contactInfo?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    kvk?: string | null;
+    btw?: string | null;
+  };
   /**
    * If checked, logging in is not required to read. Useful for building public pages.
    */
@@ -1630,6 +1637,15 @@ export interface TenantsSelect<T extends boolean = true> {
   slug?: T;
   logo?: T;
   primaryColor?: T;
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+        kvk?: T;
+        btw?: T;
+      };
   allowPublicRead?: T;
   updatedAt?: T;
   createdAt?: T;

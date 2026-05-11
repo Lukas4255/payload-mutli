@@ -1,7 +1,7 @@
 import { cn } from 'src/utilities/cn'
 import React, { Fragment } from 'react'
 
-import type { Page } from '@/payload-types'
+import type { Page, Tenant } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -23,8 +23,9 @@ const blockComponents = {
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
+  tenant?: Tenant
 }> = (props) => {
-  const { blocks } = props
+  const { blocks, tenant } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
@@ -41,7 +42,7 @@ export const RenderBlocks: React.FC<{
               return (
                 <div className="my-16" key={index}>
                   {/* @ts-expect-error */}
-                  <Block {...block} />
+                  <Block {...block} tenant={tenant} />
                 </div>
               )
             }

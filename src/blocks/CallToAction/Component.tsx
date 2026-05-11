@@ -1,11 +1,11 @@
 import React from 'react'
 
-import type { CallToActionBlock as CTABlockProps } from '@/payload-types'
-import { CMSLink } from '@/components/Link'
+import type { CallToActionBlock as CTABlockProps, Tenant } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { PatternSVG } from '@/components/PatternSVG'
+import { CTAButton } from './CTAButton'
 
-export const CallToActionBlock: React.FC<CTABlockProps> = ({ image, heading, text, link }) => {
+export const CallToActionBlock: React.FC<CTABlockProps & { tenant?: Tenant }> = ({ image, heading, text, link, tenant }) => {
   return (
     /* Wrapper gives room above for the floating image */
     <div className="mx-4 md:mx-8 relative pt-14">
@@ -34,7 +34,13 @@ export const CallToActionBlock: React.FC<CTABlockProps> = ({ image, heading, tex
               {text}
             </p>
           )}
-          {link && <CMSLink {...link} />}
+          {link && (
+            <CTAButton
+              label={link.label ?? undefined}
+              appearance={link.appearance ?? 'default'}
+              tenant={tenant}
+            />
+          )}
         </div>
       </section>
     </div>

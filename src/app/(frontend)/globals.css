@@ -2,9 +2,6 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
-/* Dark mode uses [data-theme="dark"] selector */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
 /* All theme tokens — @theme inline avoids duplicate CSS vars since we manage them ourselves */
 @theme inline {
   /* Colors */
@@ -152,13 +149,4 @@
   font-size: 3.5rem;
   font-weight: normal;
   margin-bottom: 0.25em;
-}
-
-html {
-  opacity: 0;
-}
-
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
 }
