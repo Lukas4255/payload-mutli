@@ -55,6 +55,15 @@ export const AgendaBlock: Block = {
               'Can be a specific date (02-06-2026), recurring text (Every Monday), or any other schedule description.',
           },
         },
+        {
+          name: 'url',
+          type: 'text',
+          label: 'Link URL',
+          admin: {
+            description:
+              'Optional. When set, clicking the event row opens this URL in a new tab. E.g. https://example.com/event',
+          },
+        },
       ],
     },
   ],
