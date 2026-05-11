@@ -5,11 +5,12 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { calculateReadTime } from '@/utilities/calculateReadTime'
+import { formatDateTime } from '@/utilities/formatDateTime'
 
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const { categories, meta: { image: metaImage } = {}, title, content } = post
+  const { categories, meta: { image: metaImage } = {}, title, content, publishedAt } = post
 
   const readTime = calculateReadTime(content as Record<string, any>)
 
@@ -74,6 +75,12 @@ export const PostHero: React.FC<{
             <polyline points="12 6 12 12 16 14" />
           </svg>
           <span>{readTime} min. leestijd</span>
+          {publishedAt && (
+            <>
+              <span className="text-foreground/30">·</span>
+              <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>
+            </>
+          )}
         </div>
       </div>
 
