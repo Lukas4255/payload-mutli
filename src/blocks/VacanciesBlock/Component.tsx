@@ -1,4 +1,5 @@
 import type { VacanciesBlock as VacanciesBlockProps, Vacancy } from '@/payload-types'
+import type { Where } from 'payload'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -24,7 +25,7 @@ export const VacanciesBlockComponent: React.FC<VacanciesBlockProps & { id?: stri
 
   const payload = await getPayload({ config: configPromise })
 
-  const whereConditions: Record<string, unknown>[] = [{ _status: { equals: 'published' } }]
+  const whereConditions: Where[] = [{ _status: { equals: 'published' } }]
   if (tenant) whereConditions.push({ 'tenant.id': { equals: tenant.id } })
 
   const { docs: vacancies } = await payload.find({

@@ -1,4 +1,5 @@
 import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
+import type { Where } from 'payload'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -39,7 +40,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = async
       else return category
     })
 
-    const whereConditions: Record<string, unknown>[] = []
+    const whereConditions: Where[] = []
     if (tenant) whereConditions.push({ 'tenant.id': { equals: tenant.id } })
     if (flattenedCategories?.length) {
       whereConditions.push({ categories: { in: flattenedCategories } })
