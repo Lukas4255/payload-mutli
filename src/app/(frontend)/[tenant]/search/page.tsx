@@ -3,6 +3,7 @@ import type { Metadata } from 'next/types'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import type { Where } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
 import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
@@ -24,7 +25,7 @@ export default async function Page({ params, searchParams: searchParamsPromise }
   const tenant = await fetchTenantByDomain(tenantDomain)
   if (!tenant) return null
 
-  const textConditions = query
+  const textConditions: Where[] = query
     ? [
         { title: { like: query } },
         { 'meta.title': { like: query } },
