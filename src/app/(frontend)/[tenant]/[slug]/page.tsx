@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const pageSlug = slug || 'home'
 
   const page = await queryPageBySlug({ tenantDomain: tenant, slug: pageSlug })
-  return generateMeta({ doc: page })
+  return generateMeta({ doc: page ?? {} })
 }
 
 const queryPageBySlug = cache(
