@@ -13,6 +13,7 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { ScrollToBlock } from '@/components/ScrollToBlock'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -46,11 +47,14 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{ tenant: string; slug: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function Page({ params }: Args) {
+export default async function Page({ params, searchParams }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { tenant, slug } = await params
+  const resolvedSearchParams = searchParams ? await searchParams : {}
+  const scrollTo = typeof resolvedSearchParams?.scrollTo === 'string' ? resolvedSearchParams.scrollTo : undefined
 
   const pageSlug = slug || 'home'
 
@@ -68,6 +72,7 @@ export default async function Page({ params }: Args) {
   return (
     <article className="pt-16 pb-24">
       <PageClient />
+      <ScrollToBlock scrollTo={scrollTo} />
       <PayloadRedirects disableNotFound url={`/${pageSlug}`} />
       {draft && <LivePreviewListener />}
       <RenderHero {...hero} />

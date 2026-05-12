@@ -169,7 +169,7 @@ export interface Page {
     links?:
       | {
           link: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'custom' | 'block') | null;
             newTab?: boolean | null;
             openInPopup?: boolean | null;
             reference?: {
@@ -177,6 +177,23 @@ export interface Page {
               value: number | Page;
             } | null;
             url?: string | null;
+            blockType?:
+              | (
+                  | 'archive'
+                  | 'cta'
+                  | 'content'
+                  | 'formBlock'
+                  | 'mediaBlock'
+                  | 'vacanciesBlock'
+                  | 'uspBlock'
+                  | 'agendaBlock'
+                  | 'imageTextBlock'
+                )
+              | null;
+            /**
+             * Occurrence on the page (0 = first, 1 = second, …)
+             */
+            blockIndex?: number | null;
             label: string;
             /**
              * Choose how the link should be rendered.
@@ -219,7 +236,17 @@ export interface Page {
         }[]
       | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | VacanciesBlock | USPBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | VacanciesBlock
+    | USPBlock
+    | AgendaBlock
+    | ImageTextBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -251,6 +278,7 @@ export interface Tenant {
    */
   slug: string;
   logo?: (number | null) | Media;
+  favicon?: (number | null) | Media;
   /**
    * Brand color as a hex value, e.g. #cc0000
    */
@@ -363,7 +391,7 @@ export interface CallToActionBlock {
   heading?: string | null;
   text?: string | null;
   link: {
-    type?: ('reference' | 'custom') | null;
+    type?: ('reference' | 'custom' | 'block') | null;
     newTab?: boolean | null;
     openInPopup?: boolean | null;
     reference?: {
@@ -371,6 +399,23 @@ export interface CallToActionBlock {
       value: number | Page;
     } | null;
     url?: string | null;
+    blockType?:
+      | (
+          | 'archive'
+          | 'cta'
+          | 'content'
+          | 'formBlock'
+          | 'mediaBlock'
+          | 'vacanciesBlock'
+          | 'uspBlock'
+          | 'agendaBlock'
+          | 'imageTextBlock'
+        )
+      | null;
+    /**
+     * Occurrence on the page (0 = first, 1 = second, …)
+     */
+    blockIndex?: number | null;
     label: string;
     /**
      * Choose how the link should be rendered.
@@ -406,7 +451,7 @@ export interface ContentBlock {
         } | null;
         enableLink?: boolean | null;
         link?: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'block') | null;
           newTab?: boolean | null;
           openInPopup?: boolean | null;
           reference?: {
@@ -414,6 +459,23 @@ export interface ContentBlock {
             value: number | Page;
           } | null;
           url?: string | null;
+          blockType?:
+            | (
+                | 'archive'
+                | 'cta'
+                | 'content'
+                | 'formBlock'
+                | 'mediaBlock'
+                | 'vacanciesBlock'
+                | 'uspBlock'
+                | 'agendaBlock'
+                | 'imageTextBlock'
+              )
+            | null;
+          /**
+           * Occurrence on the page (0 = first, 1 = second, …)
+           */
+          blockIndex?: number | null;
           label: string;
           /**
            * Choose how the link should be rendered.
@@ -451,7 +513,7 @@ export interface ArchiveBlock {
    * Link shown on the right side of the header, e.g. "Meer verhalen →"
    */
   link: {
-    type?: ('reference' | 'custom') | null;
+    type?: ('reference' | 'custom' | 'block') | null;
     newTab?: boolean | null;
     openInPopup?: boolean | null;
     reference?: {
@@ -459,6 +521,23 @@ export interface ArchiveBlock {
       value: number | Page;
     } | null;
     url?: string | null;
+    blockType?:
+      | (
+          | 'archive'
+          | 'cta'
+          | 'content'
+          | 'formBlock'
+          | 'mediaBlock'
+          | 'vacanciesBlock'
+          | 'uspBlock'
+          | 'agendaBlock'
+          | 'imageTextBlock'
+        )
+      | null;
+    /**
+     * Occurrence on the page (0 = first, 1 = second, …)
+     */
+    blockIndex?: number | null;
     label: string;
   };
   /**
@@ -813,7 +892,7 @@ export interface VacanciesBlock {
    * Button shown below the cards, e.g. "Bekijk alle vacatures"
    */
   viewAllLink: {
-    type?: ('reference' | 'custom') | null;
+    type?: ('reference' | 'custom' | 'block') | null;
     newTab?: boolean | null;
     openInPopup?: boolean | null;
     reference?: {
@@ -821,6 +900,23 @@ export interface VacanciesBlock {
       value: number | Page;
     } | null;
     url?: string | null;
+    blockType?:
+      | (
+          | 'archive'
+          | 'cta'
+          | 'content'
+          | 'formBlock'
+          | 'mediaBlock'
+          | 'vacanciesBlock'
+          | 'uspBlock'
+          | 'agendaBlock'
+          | 'imageTextBlock'
+        )
+      | null;
+    /**
+     * Occurrence on the page (0 = first, 1 = second, …)
+     */
+    blockIndex?: number | null;
     label: string;
   };
   id?: string | null;
@@ -870,6 +966,75 @@ export interface USPBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'uspBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AgendaBlock".
+ */
+export interface AgendaBlock {
+  /**
+   * Small label above the heading
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Add events and drag to reorder. Events are displayed in the order shown here.
+   */
+  events?:
+    | {
+        /**
+         * Font Awesome class string, e.g. "fa-solid fa-calendar" or "fa-solid fa-music". Browse at fontawesome.com/icons.
+         */
+        icon?: string | null;
+        title: string;
+        /**
+         * Can be a specific date (02-06-2026), recurring text (Every Monday), or any other schedule description.
+         */
+        date: string;
+        /**
+         * Optional. When set, clicking the event row opens this URL in a new tab. E.g. https://example.com/event
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'agendaBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock".
+ */
+export interface ImageTextBlock {
+  /**
+   * Small label above the heading
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (number | null) | Media;
+  /**
+   * When enabled, the image appears on the right side instead of the left
+   */
+  mirrored?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageTextBlock';
 }
 /**
  * Comments submitted by visitors on blog posts
@@ -949,7 +1114,7 @@ export interface Header {
   navItems?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'block') | null;
           newTab?: boolean | null;
           openInPopup?: boolean | null;
           reference?: {
@@ -957,6 +1122,23 @@ export interface Header {
             value: number | Page;
           } | null;
           url?: string | null;
+          blockType?:
+            | (
+                | 'archive'
+                | 'cta'
+                | 'content'
+                | 'formBlock'
+                | 'mediaBlock'
+                | 'vacanciesBlock'
+                | 'uspBlock'
+                | 'agendaBlock'
+                | 'imageTextBlock'
+              )
+            | null;
+          /**
+           * Occurrence on the page (0 = first, 1 = second, …)
+           */
+          blockIndex?: number | null;
           label: string;
         };
         id?: string | null;
@@ -975,7 +1157,7 @@ export interface Footer {
   menuItems?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'block') | null;
           newTab?: boolean | null;
           openInPopup?: boolean | null;
           reference?: {
@@ -983,6 +1165,23 @@ export interface Footer {
             value: number | Page;
           } | null;
           url?: string | null;
+          blockType?:
+            | (
+                | 'archive'
+                | 'cta'
+                | 'content'
+                | 'formBlock'
+                | 'mediaBlock'
+                | 'vacanciesBlock'
+                | 'uspBlock'
+                | 'agendaBlock'
+                | 'imageTextBlock'
+              )
+            | null;
+          /**
+           * Occurrence on the page (0 = first, 1 = second, …)
+           */
+          blockIndex?: number | null;
           label: string;
         };
         id?: string | null;
@@ -992,7 +1191,7 @@ export interface Footer {
     | {
         platform: 'instagram' | 'tiktok' | 'facebook' | 'linkedin' | 'twitter' | 'youtube';
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'block') | null;
           newTab?: boolean | null;
           openInPopup?: boolean | null;
           reference?: {
@@ -1000,6 +1199,23 @@ export interface Footer {
             value: number | Page;
           } | null;
           url?: string | null;
+          blockType?:
+            | (
+                | 'archive'
+                | 'cta'
+                | 'content'
+                | 'formBlock'
+                | 'mediaBlock'
+                | 'vacanciesBlock'
+                | 'uspBlock'
+                | 'agendaBlock'
+                | 'imageTextBlock'
+              )
+            | null;
+          /**
+           * Occurrence on the page (0 = first, 1 = second, …)
+           */
+          blockIndex?: number | null;
           label: string;
         };
         id?: string | null;
@@ -1008,7 +1224,7 @@ export interface Footer {
   legalItems?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'block') | null;
           newTab?: boolean | null;
           openInPopup?: boolean | null;
           reference?: {
@@ -1016,6 +1232,23 @@ export interface Footer {
             value: number | Page;
           } | null;
           url?: string | null;
+          blockType?:
+            | (
+                | 'archive'
+                | 'cta'
+                | 'content'
+                | 'formBlock'
+                | 'mediaBlock'
+                | 'vacanciesBlock'
+                | 'uspBlock'
+                | 'agendaBlock'
+                | 'imageTextBlock'
+              )
+            | null;
+          /**
+           * Occurrence on the page (0 = first, 1 = second, …)
+           */
+          blockIndex?: number | null;
           label: string;
         };
         id?: string | null;
@@ -1249,6 +1482,8 @@ export interface PagesSelect<T extends boolean = true> {
                     openInPopup?: T;
                     reference?: T;
                     url?: T;
+                    blockType?: T;
+                    blockIndex?: T;
                     label?: T;
                     appearance?: T;
                   };
@@ -1282,6 +1517,8 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         vacanciesBlock?: T | VacanciesBlockSelect<T>;
         uspBlock?: T | USPBlockSelect<T>;
+        agendaBlock?: T | AgendaBlockSelect<T>;
+        imageTextBlock?: T | ImageTextBlockSelect<T>;
       };
   meta?:
     | T
@@ -1313,6 +1550,8 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
         openInPopup?: T;
         reference?: T;
         url?: T;
+        blockType?: T;
+        blockIndex?: T;
         label?: T;
         appearance?: T;
       };
@@ -1338,6 +1577,8 @@ export interface ContentBlockSelect<T extends boolean = true> {
               openInPopup?: T;
               reference?: T;
               url?: T;
+              blockType?: T;
+              blockIndex?: T;
               label?: T;
               appearance?: T;
             };
@@ -1370,6 +1611,8 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
         openInPopup?: T;
         reference?: T;
         url?: T;
+        blockType?: T;
+        blockIndex?: T;
         label?: T;
       };
   introContent?: T;
@@ -1408,6 +1651,8 @@ export interface VacanciesBlockSelect<T extends boolean = true> {
         openInPopup?: T;
         reference?: T;
         url?: T;
+        blockType?: T;
+        blockIndex?: T;
         label?: T;
       };
   id?: T;
@@ -1441,6 +1686,38 @@ export interface USPBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AgendaBlock_select".
+ */
+export interface AgendaBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  events?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        date?: T;
+        url?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock_select".
+ */
+export interface ImageTextBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  richText?: T;
+  image?: T;
+  mirrored?: T;
   id?: T;
   blockName?: T;
 }
@@ -1636,6 +1913,7 @@ export interface TenantsSelect<T extends boolean = true> {
   domain?: T;
   slug?: T;
   logo?: T;
+  favicon?: T;
   primaryColor?: T;
   contactInfo?:
     | T
@@ -1686,6 +1964,8 @@ export interface HeaderSelect<T extends boolean = true> {
               openInPopup?: T;
               reference?: T;
               url?: T;
+              blockType?: T;
+              blockIndex?: T;
               label?: T;
             };
         id?: T;
@@ -1710,6 +1990,8 @@ export interface FooterSelect<T extends boolean = true> {
               openInPopup?: T;
               reference?: T;
               url?: T;
+              blockType?: T;
+              blockIndex?: T;
               label?: T;
             };
         id?: T;
@@ -1726,6 +2008,8 @@ export interface FooterSelect<T extends boolean = true> {
               openInPopup?: T;
               reference?: T;
               url?: T;
+              blockType?: T;
+              blockIndex?: T;
               label?: T;
             };
         id?: T;
@@ -1741,6 +2025,8 @@ export interface FooterSelect<T extends boolean = true> {
               openInPopup?: T;
               reference?: T;
               url?: T;
+              blockType?: T;
+              blockIndex?: T;
               label?: T;
             };
         id?: T;

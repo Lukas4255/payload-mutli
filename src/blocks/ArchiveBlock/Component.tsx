@@ -75,7 +75,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = async
               </p>
             )}
             {heading && (
-              <h2 className="text-5xl font-bold text-foreground">{heading}</h2>
+              <h2 className="text-5xl font-semibold text-foreground">{heading}</h2>
             )}
           </div>
 

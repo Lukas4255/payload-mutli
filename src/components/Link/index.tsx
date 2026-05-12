@@ -3,6 +3,7 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from 'src/utilities/cn'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
@@ -19,8 +20,10 @@ type CMSLinkType = {
     value: Page | Post | string | number
   } | null
   size?: ButtonProps['size'] | null
-  type?: 'custom' | 'reference' | null
+  type?: 'custom' | 'reference' | 'block' | null
   url?: string | null
+  blockType?: string | null
+  blockIndex?: number | null
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
@@ -35,7 +38,47 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     reference,
     size: sizeFromProps,
     url,
+    blockType,
+    blockIndex,
   } = props
+
+  const pathname = usePathname()
+  const router = useRouter()
+
+  if (type === 'block') {
+    const scrollId = `block-${blockType}-${blockIndex ?? 0}`
+
+    const handleBlockClick = (e: React.MouseEvent) => {
+      e.preventDefault()
+      const el = document.getElementById(scrollId)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+        history.replaceState(null, '', pathname)
+      } else {
+        router.push(`/?scrollTo=${scrollId}`)
+      }
+    }
+
+    const content = label ?? children
+
+    if (appearance === 'inline') {
+      return (
+        <a href="/" className={cn(className)} onClick={handleBlockClick}>
+          {content}
+        </a>
+      )
+    }
+
+    const size = appearance === 'link' ? 'clear' : sizeFromProps
+
+    return (
+      <Button asChild className={className} size={size} variant={appearance}>
+        <a href="/" onClick={handleBlockClick}>
+          {content}
+        </a>
+      </Button>
+    )
+  }
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug

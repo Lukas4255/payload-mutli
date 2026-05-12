@@ -28,7 +28,7 @@ export const AgendaBlockComponent: React.FC<AgendaBlockProps & { id?: string }> 
   const hasEvents = events && events.length > 0
 
   return (
-    <section className="px-4 md:px-8" id={`block-${id}`}>
+    <section className="px-4 pb-8 md:px-8" id={`block-${id}`}>
       <div className="max-w-6xl mx-auto flex flex-col gap-10">
 
         {/* ── Header ─────────────────────────────────────────── */}
@@ -55,7 +55,7 @@ export const AgendaBlockComponent: React.FC<AgendaBlockProps & { id?: string }> 
               const inner = (
                 <>
                   {/* Icon */}
-                  <span className="shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-primary/10 text-primary text-xl">
+                  <span className="shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-primary/10 text-foreground text-xl">
                     {event.icon ? (
                       <i className={event.icon} aria-hidden="true" />
                     ) : (

@@ -42,7 +42,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
   }, [lightboxIndex, closeLightbox, showPrev, showNext])
 
   return (
-    <section className="px-4 md:px-8 bg-gray-100 pt-20 pb-16" id={`block-${id}`}>
+    <section className="px-4 md:px-8 bg-gray-100 pt-20 pb-16" id={`block-${id} USP`}>
       <div className="max-w-6xl mx-auto flex flex-col gap-12">
 
         {/* ── Header ─────────────────────────────────────────── */}
@@ -54,7 +54,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
             </p>
           )}
           {heading && (
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground leading-tight mb-4">
+            <h2 className="text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4">
               {heading}
             </h2>
           )}

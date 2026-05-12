@@ -31,6 +31,7 @@ import { draftMode } from 'next/headers'
 import { headers } from 'next/headers'
 import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
 import { hexToHSL } from '@/utilities/hexToHSL'
+import type { Media } from '@/payload-types'
 import { notFound } from 'next/navigation'
 
 import Script from 'next/script'
@@ -49,6 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   const primaryHSL = tenant.primaryColor ? hexToHSL(tenant.primaryColor) : null
+  const faviconUrl = (tenant.favicon as Media | null)?.url
 
   return (
     <html
@@ -58,8 +60,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       style={primaryHSL ? ({ '--primary': primaryHSL } as React.CSSProperties) : undefined}
     >
       <head>
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        {faviconUrl ? (
+          <link href={faviconUrl} rel="icon" />
+        ) : (
+          <>
+            <link href="/favicon.ico" rel="icon" sizes="32x32" />
+            <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+          </>
+        )}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://use.typekit.net/svl1xde.css" />
       </head>

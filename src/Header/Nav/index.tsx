@@ -13,15 +13,15 @@ export const HeaderNav: React.FC<{ header: HeaderType; tenant?: Tenant }> = ({ h
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <nav className="flex gap-3 items-center">
+    <nav className="flex gap-5 items-center">
       {navItems.map(({ link }, i) => {
-        return <CMSLink key={i} {...link} appearance="link" />
+        return <CMSLink key={i} {...link} appearance="link"/>
       })}
       <button
         onClick={() => setDrawerOpen(true)}
-        className="cursor-pointer text-sm font-medium underline-offset-4 hover:underline transition-colors"
+        className="inline-flex items-center justify-center cursor-pointer whitespace-nowrap rounded font-semibold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-4 py-2 bg-white text-secondary-foreground hover:bg-secondary/80"
       >
-        Contact
+       👋 Contact
       </button>
       <ContactDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} tenant={tenant} />
     </nav>

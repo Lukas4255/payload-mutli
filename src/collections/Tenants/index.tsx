@@ -90,6 +90,11 @@ export const Tenants: CollectionConfig = {
       relationTo: 'media',
     },
     {
+      name: 'favicon',
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
       name: 'primaryColor',
       type: 'text',
       admin: {

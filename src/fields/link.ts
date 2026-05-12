@@ -53,6 +53,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
                 label: 'Custom URL',
                 value: 'custom',
               },
+              {
+                label: 'Scroll to block',
+                value: 'block',
+              },
             ],
           },
           {
@@ -102,6 +106,37 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       label: 'Custom URL',
       required: true,
+    },
+    {
+      name: 'blockType',
+      type: 'select',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'block',
+      },
+      label: 'Block type',
+      options: [
+        { label: 'Archive', value: 'archive' },
+        { label: 'Call to Action', value: 'cta' },
+        { label: 'Content', value: 'content' },
+        { label: 'Form', value: 'formBlock' },
+        { label: 'Media', value: 'mediaBlock' },
+        { label: 'Vacancies', value: 'vacanciesBlock' },
+        { label: 'USP', value: 'uspBlock' },
+        { label: 'Agenda', value: 'agendaBlock' },
+        { label: 'Content Block', value: 'imageTextBlock' },
+      ],
+      required: true,
+    },
+    {
+      name: 'blockIndex',
+      type: 'number',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'block',
+        description: 'Occurrence on the page (0 = first, 1 = second, …)',
+      },
+      defaultValue: 0,
+      label: 'Occurrence',
+      min: 0,
     },
   ]
 
