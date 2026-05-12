@@ -2,22 +2,22 @@
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_cta_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
-  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_archive_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_cta_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
-  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_archive_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum_users_roles" AS ENUM('super-admin', 'user');
-  CREATE TYPE IF NOT EXISTS "public"."enum_users_tenants_roles" AS ENUM('tenant-admin', 'tenant-viewer');
-  CREATE TYPE IF NOT EXISTS "public"."enum_vacancies_status" AS ENUM('draft', 'published');
-  CREATE TYPE IF NOT EXISTS "public"."enum__vacancies_v_version_status" AS ENUM('draft', 'published');
-  CREATE TYPE IF NOT EXISTS "public"."enum_footer_menu_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum_footer_social_items_platform" AS ENUM('instagram', 'tiktok', 'facebook', 'linkedin', 'twitter', 'youtube');
-  CREATE TYPE IF NOT EXISTS "public"."enum_footer_social_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE IF NOT EXISTS "public"."enum_footer_legal_items_link_type" AS ENUM('reference', 'custom');
+   DO $$ BEGIN CREATE TYPE "public"."enum_pages_blocks_cta_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_pages_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_pages_blocks_archive_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_pages_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum__pages_v_blocks_cta_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum__pages_v_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum__pages_v_blocks_archive_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum__pages_v_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_users_roles" AS ENUM('super-admin', 'user'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_users_tenants_roles" AS ENUM('tenant-admin', 'tenant-viewer'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_vacancies_status" AS ENUM('draft', 'published'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum__vacancies_v_version_status" AS ENUM('draft', 'published'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_footer_menu_items_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_footer_social_items_platform" AS ENUM('instagram', 'tiktok', 'facebook', 'linkedin', 'twitter', 'youtube'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_footer_social_items_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN CREATE TYPE "public"."enum_footer_legal_items_link_type" AS ENUM('reference', 'custom'); EXCEPTION WHEN duplicate_object THEN null; END $$;
   ALTER TYPE "public"."enum_pages_hero_links_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
   ALTER TYPE "public"."enum_pages_blocks_content_columns_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
   ALTER TYPE "public"."enum__pages_v_version_hero_links_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
