@@ -1,42 +1,42 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+﻿import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."enum_pages_blocks_cta_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_pages_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
-  CREATE TYPE "public"."enum_pages_blocks_archive_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_pages_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_blocks_cta_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
-  CREATE TYPE "public"."enum__pages_v_blocks_archive_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_users_roles" AS ENUM('super-admin', 'user');
-  CREATE TYPE "public"."enum_users_tenants_roles" AS ENUM('tenant-admin', 'tenant-viewer');
-  CREATE TYPE "public"."enum_vacancies_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum__vacancies_v_version_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum_footer_menu_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_footer_social_items_platform" AS ENUM('instagram', 'tiktok', 'facebook', 'linkedin', 'twitter', 'youtube');
-  CREATE TYPE "public"."enum_footer_social_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_footer_legal_items_link_type" AS ENUM('reference', 'custom');
-  ALTER TYPE "public"."enum_pages_hero_links_link_appearance" ADD VALUE 'secondary';
-  ALTER TYPE "public"."enum_pages_blocks_content_columns_link_appearance" ADD VALUE 'secondary';
-  ALTER TYPE "public"."enum__pages_v_version_hero_links_link_appearance" ADD VALUE 'secondary';
-  ALTER TYPE "public"."enum__pages_v_blocks_content_columns_link_appearance" ADD VALUE 'secondary';
-  CREATE TABLE "pages_hero_images" (
+   CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_cta_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
+  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_archive_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum_pages_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_cta_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_cta_link_appearance" AS ENUM('default', 'outline', 'secondary');
+  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_archive_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum__pages_v_blocks_vacancies_block_view_all_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum_users_roles" AS ENUM('super-admin', 'user');
+  CREATE TYPE IF NOT EXISTS "public"."enum_users_tenants_roles" AS ENUM('tenant-admin', 'tenant-viewer');
+  CREATE TYPE IF NOT EXISTS "public"."enum_vacancies_status" AS ENUM('draft', 'published');
+  CREATE TYPE IF NOT EXISTS "public"."enum__vacancies_v_version_status" AS ENUM('draft', 'published');
+  CREATE TYPE IF NOT EXISTS "public"."enum_footer_menu_items_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum_footer_social_items_platform" AS ENUM('instagram', 'tiktok', 'facebook', 'linkedin', 'twitter', 'youtube');
+  CREATE TYPE IF NOT EXISTS "public"."enum_footer_social_items_link_type" AS ENUM('reference', 'custom');
+  CREATE TYPE IF NOT EXISTS "public"."enum_footer_legal_items_link_type" AS ENUM('reference', 'custom');
+  ALTER TYPE "public"."enum_pages_hero_links_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
+  ALTER TYPE "public"."enum_pages_blocks_content_columns_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
+  ALTER TYPE "public"."enum__pages_v_version_hero_links_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
+  ALTER TYPE "public"."enum__pages_v_blocks_content_columns_link_appearance" ADD VALUE IF NOT EXISTS 'secondary';
+  CREATE TABLE IF NOT EXISTS "pages_hero_images" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"image_id" integer
   );
   
-  CREATE TABLE "pages_hero_social_proof_avatars" (
+  CREATE TABLE IF NOT EXISTS "pages_hero_social_proof_avatars" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"avatar_id" integer
   );
   
-  CREATE TABLE "pages_blocks_vacancies_block" (
+  CREATE TABLE IF NOT EXISTS "pages_blocks_vacancies_block" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
@@ -52,14 +52,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
-  CREATE TABLE "pages_blocks_usp_block_gallery" (
+  CREATE TABLE IF NOT EXISTS "pages_blocks_usp_block_gallery" (
   	"_order" integer NOT NULL,
   	"_parent_id" varchar NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"image_id" integer
   );
   
-  CREATE TABLE "pages_blocks_usp_block_columns_items" (
+  CREATE TABLE IF NOT EXISTS "pages_blocks_usp_block_columns_items" (
   	"_order" integer NOT NULL,
   	"_parent_id" varchar NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -68,14 +68,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"description" varchar
   );
   
-  CREATE TABLE "pages_blocks_usp_block_columns" (
+  CREATE TABLE IF NOT EXISTS "pages_blocks_usp_block_columns" (
   	"_order" integer NOT NULL,
   	"_parent_id" varchar NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"title" varchar
   );
   
-  CREATE TABLE "pages_blocks_usp_block" (
+  CREATE TABLE IF NOT EXISTS "pages_blocks_usp_block" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
@@ -86,7 +86,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
-  CREATE TABLE "_pages_v_version_hero_images" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_version_hero_images" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -94,7 +94,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "_pages_v_version_hero_social_proof_avatars" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_version_hero_social_proof_avatars" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -102,7 +102,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "_pages_v_blocks_vacancies_block" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_vacancies_block" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
@@ -119,7 +119,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
-  CREATE TABLE "_pages_v_blocks_usp_block_gallery" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_usp_block_gallery" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -127,7 +127,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "_pages_v_blocks_usp_block_columns_items" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_usp_block_columns_items" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -137,7 +137,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "_pages_v_blocks_usp_block_columns" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_usp_block_columns" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -145,7 +145,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "_pages_v_blocks_usp_block" (
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_usp_block" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
@@ -157,28 +157,28 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
-  CREATE TABLE "users_roles" (
+  CREATE TABLE IF NOT EXISTS "users_roles" (
   	"order" integer NOT NULL,
   	"parent_id" integer NOT NULL,
   	"value" "enum_users_roles",
   	"id" serial PRIMARY KEY NOT NULL
   );
   
-  CREATE TABLE "users_tenants_roles" (
+  CREATE TABLE IF NOT EXISTS "users_tenants_roles" (
   	"order" integer NOT NULL,
   	"parent_id" varchar NOT NULL,
   	"value" "enum_users_tenants_roles",
   	"id" serial PRIMARY KEY NOT NULL
   );
   
-  CREATE TABLE "users_tenants" (
+  CREATE TABLE IF NOT EXISTS "users_tenants" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"tenant_id" integer NOT NULL
   );
   
-  CREATE TABLE "users_sessions" (
+  CREATE TABLE IF NOT EXISTS "users_sessions" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -186,7 +186,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"expires_at" timestamp(3) with time zone NOT NULL
   );
   
-  CREATE TABLE "tenants" (
+  CREATE TABLE IF NOT EXISTS "tenants" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
   	"domain" varchar,
@@ -203,7 +203,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE "vacancies" (
+  CREATE TABLE IF NOT EXISTS "vacancies" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"tenant_id" integer,
   	"title" varchar,
@@ -220,7 +220,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_status" "enum_vacancies_status" DEFAULT 'draft'
   );
   
-  CREATE TABLE "_vacancies_v" (
+  CREATE TABLE IF NOT EXISTS "_vacancies_v" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"parent_id" integer,
   	"version_tenant_id" integer,
@@ -242,7 +242,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"autosave" boolean
   );
   
-  CREATE TABLE "footer_menu_items" (
+  CREATE TABLE IF NOT EXISTS "footer_menu_items" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -253,7 +253,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"link_label" varchar NOT NULL
   );
   
-  CREATE TABLE "footer_social_items" (
+  CREATE TABLE IF NOT EXISTS "footer_social_items" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -265,7 +265,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"link_label" varchar NOT NULL
   );
   
-  CREATE TABLE "footer_legal_items" (
+  CREATE TABLE IF NOT EXISTS "footer_legal_items" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -276,7 +276,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"link_label" varchar NOT NULL
   );
   
-  CREATE TABLE "payload_kv" (
+  CREATE TABLE IF NOT EXISTS "payload_kv" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"key" varchar NOT NULL,
   	"data" jsonb NOT NULL
@@ -285,10 +285,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "pages_blocks_cta_links" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "_pages_v_blocks_cta_links" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "footer_nav_items" DISABLE ROW LEVEL SECURITY;
-  DROP TABLE "pages_blocks_cta_links" CASCADE;
-  DROP TABLE "_pages_v_blocks_cta_links" CASCADE;
-  DROP TABLE "footer_nav_items" CASCADE;
-  DROP INDEX "redirects_from_idx";
+  DROP TABLE IF EXISTS "pages_blocks_cta_links" CASCADE;
+  DROP TABLE IF EXISTS "_pages_v_blocks_cta_links" CASCADE;
+  DROP TABLE IF EXISTS "footer_nav_items" CASCADE;
+  DROP INDEX IF EXISTS "redirects_from_idx";
   ALTER TABLE "forms_emails" ALTER COLUMN "subject" SET DEFAULT 'You''ve received a new message.';
   ALTER TABLE "header" ALTER COLUMN "updated_at" SET DEFAULT now();
   ALTER TABLE "header" ALTER COLUMN "updated_at" SET NOT NULL;
@@ -298,70 +298,70 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "footer" ALTER COLUMN "updated_at" SET NOT NULL;
   ALTER TABLE "footer" ALTER COLUMN "created_at" SET DEFAULT now();
   ALTER TABLE "footer" ALTER COLUMN "created_at" SET NOT NULL;
-  ALTER TABLE "pages_hero_links" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "image_id" integer;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "heading" varchar;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "text" varchar;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_type" "enum_pages_blocks_cta_link_type" DEFAULT 'reference';
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_new_tab" boolean;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_url" varchar;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_label" varchar;
-  ALTER TABLE "pages_blocks_cta" ADD COLUMN "link_appearance" "enum_pages_blocks_cta_link_appearance" DEFAULT 'default';
-  ALTER TABLE "pages_blocks_content_columns" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "eyebrow" varchar;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "heading" varchar;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "link_type" "enum_pages_blocks_archive_link_type" DEFAULT 'reference';
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "link_new_tab" boolean;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "link_url" varchar;
-  ALTER TABLE "pages_blocks_archive" ADD COLUMN "link_label" varchar;
-  ALTER TABLE "pages" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "pages" ADD COLUMN "hero_eyebrow" varchar;
-  ALTER TABLE "pages" ADD COLUMN "hero_heading" varchar;
-  ALTER TABLE "pages" ADD COLUMN "hero_intro_text" varchar;
-  ALTER TABLE "pages" ADD COLUMN "hero_social_proof_text" varchar;
-  ALTER TABLE "_pages_v_version_hero_links" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "image_id" integer;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "heading" varchar;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "text" varchar;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_type" "enum__pages_v_blocks_cta_link_type" DEFAULT 'reference';
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_new_tab" boolean;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_url" varchar;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_label" varchar;
-  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN "link_appearance" "enum__pages_v_blocks_cta_link_appearance" DEFAULT 'default';
-  ALTER TABLE "_pages_v_blocks_content_columns" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "eyebrow" varchar;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "heading" varchar;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "link_type" "enum__pages_v_blocks_archive_link_type" DEFAULT 'reference';
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "link_new_tab" boolean;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "link_url" varchar;
-  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN "link_label" varchar;
-  ALTER TABLE "_pages_v" ADD COLUMN "version_tenant_id" integer;
-  ALTER TABLE "_pages_v" ADD COLUMN "version_hero_eyebrow" varchar;
-  ALTER TABLE "_pages_v" ADD COLUMN "version_hero_heading" varchar;
-  ALTER TABLE "_pages_v" ADD COLUMN "version_hero_intro_text" varchar;
-  ALTER TABLE "_pages_v" ADD COLUMN "version_hero_social_proof_text" varchar;
-  ALTER TABLE "posts" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "posts" ADD COLUMN "read_time" numeric;
-  ALTER TABLE "_posts_v" ADD COLUMN "version_tenant_id" integer;
-  ALTER TABLE "_posts_v" ADD COLUMN "version_read_time" numeric;
-  ALTER TABLE "media" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "redirects" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "forms_blocks_select" ADD COLUMN "placeholder" varchar;
-  ALTER TABLE "forms" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "form_submissions" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "search" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "tenants_id" integer;
-  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "vacancies_id" integer;
-  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "header_id" integer;
-  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "footer_id" integer;
-  ALTER TABLE "header_nav_items" ADD COLUMN "link_open_in_popup" boolean;
-  ALTER TABLE "header" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "footer" ADD COLUMN "tenant_id" integer;
-  ALTER TABLE "footer" ADD COLUMN "copyright" varchar;
+  ALTER TABLE "pages_hero_links" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "image_id" integer;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "heading" varchar;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "text" varchar;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_type" "enum_pages_blocks_cta_link_type" DEFAULT 'reference';
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_new_tab" boolean;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_url" varchar;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_label" varchar;
+  ALTER TABLE "pages_blocks_cta" ADD COLUMN IF NOT EXISTS "link_appearance" "enum_pages_blocks_cta_link_appearance" DEFAULT 'default';
+  ALTER TABLE "pages_blocks_content_columns" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "eyebrow" varchar;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "heading" varchar;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "link_type" "enum_pages_blocks_archive_link_type" DEFAULT 'reference';
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "link_new_tab" boolean;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "link_url" varchar;
+  ALTER TABLE "pages_blocks_archive" ADD COLUMN IF NOT EXISTS "link_label" varchar;
+  ALTER TABLE "pages" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "pages" ADD COLUMN IF NOT EXISTS "hero_eyebrow" varchar;
+  ALTER TABLE "pages" ADD COLUMN IF NOT EXISTS "hero_heading" varchar;
+  ALTER TABLE "pages" ADD COLUMN IF NOT EXISTS "hero_intro_text" varchar;
+  ALTER TABLE "pages" ADD COLUMN IF NOT EXISTS "hero_social_proof_text" varchar;
+  ALTER TABLE "_pages_v_version_hero_links" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "image_id" integer;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "heading" varchar;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "text" varchar;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_type" "enum__pages_v_blocks_cta_link_type" DEFAULT 'reference';
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_new_tab" boolean;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_url" varchar;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_label" varchar;
+  ALTER TABLE "_pages_v_blocks_cta" ADD COLUMN IF NOT EXISTS "link_appearance" "enum__pages_v_blocks_cta_link_appearance" DEFAULT 'default';
+  ALTER TABLE "_pages_v_blocks_content_columns" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "eyebrow" varchar;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "heading" varchar;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "link_type" "enum__pages_v_blocks_archive_link_type" DEFAULT 'reference';
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "link_new_tab" boolean;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "link_url" varchar;
+  ALTER TABLE "_pages_v_blocks_archive" ADD COLUMN IF NOT EXISTS "link_label" varchar;
+  ALTER TABLE "_pages_v" ADD COLUMN IF NOT EXISTS "version_tenant_id" integer;
+  ALTER TABLE "_pages_v" ADD COLUMN IF NOT EXISTS "version_hero_eyebrow" varchar;
+  ALTER TABLE "_pages_v" ADD COLUMN IF NOT EXISTS "version_hero_heading" varchar;
+  ALTER TABLE "_pages_v" ADD COLUMN IF NOT EXISTS "version_hero_intro_text" varchar;
+  ALTER TABLE "_pages_v" ADD COLUMN IF NOT EXISTS "version_hero_social_proof_text" varchar;
+  ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "read_time" numeric;
+  ALTER TABLE "_posts_v" ADD COLUMN IF NOT EXISTS "version_tenant_id" integer;
+  ALTER TABLE "_posts_v" ADD COLUMN IF NOT EXISTS "version_read_time" numeric;
+  ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "redirects" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "forms_blocks_select" ADD COLUMN IF NOT EXISTS "placeholder" varchar;
+  ALTER TABLE "forms" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "form_submissions" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "search" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "tenants_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "vacancies_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "header_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "footer_id" integer;
+  ALTER TABLE "header_nav_items" ADD COLUMN IF NOT EXISTS "link_open_in_popup" boolean;
+  ALTER TABLE "header" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "footer" ADD COLUMN IF NOT EXISTS "tenant_id" integer;
+  ALTER TABLE "footer" ADD COLUMN IF NOT EXISTS "copyright" varchar;
   ALTER TABLE "pages_hero_images" ADD CONSTRAINT "pages_hero_images_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "pages_hero_images" ADD CONSTRAINT "pages_hero_images_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "pages_hero_social_proof_avatars" ADD CONSTRAINT "pages_hero_social_proof_avatars_avatar_id_media_id_fk" FOREIGN KEY ("avatar_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;

@@ -8,7 +8,7 @@ export const revalidateHeader: CollectionAfterChangeHook = ({ doc, req: { payloa
 
   if (tenantId) {
     payload.logger.info(`Revalidating header for tenant ${tenantId}`)
-    revalidateTag(`global_header_${tenantId}`)
+    revalidateTag(`global_header_${tenantId}`, 'max')
   } else {
     payload.logger.warn('revalidateHeader: could not determine tenant ID from doc')
   }

@@ -8,7 +8,7 @@ export const revalidateFooter: CollectionAfterChangeHook = ({ doc, req: { payloa
 
   if (tenantId) {
     payload.logger.info(`Revalidating footer for tenant ${tenantId}`)
-    revalidateTag(`global_footer_${tenantId}`)
+    revalidateTag(`global_footer_${tenantId}`, 'max')
   } else {
     payload.logger.warn('revalidateFooter: could not determine tenant ID from doc')
   }
