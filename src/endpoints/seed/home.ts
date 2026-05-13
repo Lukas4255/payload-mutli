@@ -511,55 +511,7 @@ export const home: RequiredDataFromCollectionSlug<'pages'> = {
       categories: [],
       // @ts-ignore
       link: { type: 'custom', label: 'Meer verhalen', url: '/posts' },
-      introContent: {
-        root: {
-          type: 'root',
-          children: [
-            {
-              type: 'heading',
-              children: [
-                {
-                  type: 'text',
-                  detail: 0,
-                  format: 0,
-                  mode: 'normal',
-                  style: '',
-                  text: 'Recent posts',
-                  version: 1,
-                },
-              ],
-              direction: 'ltr',
-              format: '',
-              indent: 0,
-              tag: 'h3',
-              version: 1,
-            },
-            {
-              type: 'paragraph',
-              children: [
-                {
-                  type: 'text',
-                  detail: 0,
-                  format: 0,
-                  mode: 'normal',
-                  style: '',
-                  text: 'The posts below are displayed in an "Archive" layout building block which is an extremely powerful way to display documents on a page. It can be auto-populated by collection or by category, or posts can be individually selected. Pagination controls will automatically appear if the number of results exceeds the number of items per page.',
-                  version: 1,
-                },
-              ],
-              direction: 'ltr',
-              format: '',
-              indent: 0,
-              textFormat: 0,
-              version: 1,
-            },
-          ],
-          direction: 'ltr',
-          format: '',
-          indent: 0,
-          version: 1,
-        },
-      },
+      heading: 'Recent posts',
       populateBy: 'collection',
       relationTo: 'posts',
     },
