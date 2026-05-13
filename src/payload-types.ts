@@ -540,24 +540,6 @@ export interface ArchiveBlock {
     blockIndex?: number | null;
     label: string;
   };
-  /**
-   * Optional rich text shown below the header
-   */
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
   categories?: (number | Category)[] | null;
@@ -1254,9 +1236,6 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Bijv. "© 2026 Rentree"
-   */
   copyright?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -1615,7 +1594,6 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
         blockIndex?: T;
         label?: T;
       };
-  introContent?: T;
   populateBy?: T;
   relationTo?: T;
   categories?: T;

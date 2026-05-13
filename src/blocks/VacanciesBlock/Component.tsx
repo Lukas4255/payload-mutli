@@ -59,15 +59,17 @@ export const VacanciesBlockComponent: React.FC<VacanciesBlockProps & { id?: stri
 
       {/* Vacancy cards */}
       {vacancies.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="flex flex-wrap justify-center gap-6 mb-10">
           {vacancies.map((vacancy) => (
-            <VacancyCard key={vacancy.id} vacancy={vacancy as Vacancy} />
+            <div key={vacancy.id} className="w-full md:w-[calc(33.333%-1rem)]">
+              <VacancyCard vacancy={vacancy as Vacancy} />
+            </div>
           ))}
         </div>
       )}
 
       {/* View all button */}
-      {viewAllLink && (
+      {viewAllLink && vacancies.length > 3 && (
         <div className="flex justify-center">
           <CMSLink
             {...viewAllLink}

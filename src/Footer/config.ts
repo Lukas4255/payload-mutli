@@ -55,9 +55,6 @@ export const Footer: CollectionConfig = {
       name: 'copyright',
       type: 'text',
       label: 'Copyright tekst',
-      admin: {
-        description: 'Bijv. "© 2026 Rentree"',
-      },
     },
   ],
   hooks: {

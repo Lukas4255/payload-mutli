@@ -1,12 +1,5 @@
 import type { Block } from 'payload'
 
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
-
 import { link } from '@/fields/link'
 
 export const Archive: Block = {
@@ -36,24 +29,6 @@ export const Archive: Block = {
         },
       },
     }),
-    {
-      name: 'introContent',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
-      label: 'Intro Content',
-      admin: {
-        description: 'Optional rich text shown below the header',
-      },
-    },
     {
       name: 'populateBy',
       type: 'select',

@@ -80,7 +80,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = async
             )}
           </div>
 
-          {link && (
+          {link && posts.length > 3 && (
             <CMSLink
               {...link}
               appearance="inline"
