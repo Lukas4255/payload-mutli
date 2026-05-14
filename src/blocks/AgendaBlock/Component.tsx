@@ -55,7 +55,7 @@ export const AgendaBlockComponent: React.FC<AgendaBlockProps & { id?: string }> 
               const inner = (
                 <>
                   {/* Icon */}
-                  <span className="shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-primary/10 text-foreground text-xl">
+                  <span className="shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-primary text-white text-xl">
                     {event.icon ? (
                       <i className={event.icon} aria-hidden="true" />
                     ) : (
@@ -71,7 +71,7 @@ export const AgendaBlockComponent: React.FC<AgendaBlockProps & { id?: string }> 
                   </div>
 
                   {/* Date badge */}
-                  <span className="shrink-0 text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full whitespace-nowrap">
+                  <span className="shrink-0 text-sm font-bold text-foreground bg-secondary px-3 py-1 rounded-full whitespace-nowrap">
                     {event.date}
                   </span>
 
