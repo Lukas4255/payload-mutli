@@ -52,9 +52,8 @@ export const ContactDrawer: React.FC<ContactDrawerProps> = ({ open, onClose, ten
         role="dialog"
         aria-modal="true"
         aria-label="Contact"
-        style={{ width: 560 }}
         className={[
-          'fixed top-0 right-0 z-50 h-full bg-background shadow-2xl flex flex-col',
+          'fixed top-0 right-0 z-50 h-full w-full max-w-[560px] bg-background shadow-2xl flex flex-col',
           'transition-transform duration-300 ease-in-out',
           open ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}

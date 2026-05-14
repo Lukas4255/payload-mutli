@@ -65,10 +65,10 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
 
         {/* ── Photo Gallery ───────────────────────────────────── */}
         {photos.length > 0 && (
-          <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 h-120 rounded-3xl overflow-hidden">
-            {/* Large left image — spans both rows */}
+          <div className="flex flex-col gap-2 md:grid md:grid-cols-[2fr_1fr_1fr] md:grid-rows-2 md:h-120 rounded-3xl overflow-hidden">
+            {/* Large left image — spans both rows on desktop */}
             <div
-              className="row-span-2 relative overflow-hidden cursor-zoom-in"
+              className="relative overflow-hidden cursor-zoom-in aspect-video md:aspect-auto md:row-span-2"
               onClick={() => setLightboxIndex(0)}
             >
               <Media fill resource={photos[0]!.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
@@ -78,7 +78,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
             {photos.slice(1, 3).map((photo, i) => (
               <div
                 key={photo.id ?? i}
-                className="relative overflow-hidden cursor-zoom-in"
+                className="relative overflow-hidden cursor-zoom-in aspect-video md:aspect-auto"
                 onClick={() => setLightboxIndex(i + 1)}
               >
                 <Media fill resource={photo.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
@@ -89,7 +89,7 @@ export const USPBlockComponent: React.FC<USPBlockProps & { id?: string }> = ({
             {photos.slice(3, 5).map((photo, i) => (
               <div
                 key={photo.id ?? (i + 3)}
-                className="relative overflow-hidden cursor-zoom-in"
+                className="relative overflow-hidden cursor-zoom-in aspect-video md:aspect-auto"
                 onClick={() => setLightboxIndex(i + 3)}
               >
                 <Media fill resource={photo.image} imgClassName="object-cover transition-transform duration-300 hover:scale-105" />
