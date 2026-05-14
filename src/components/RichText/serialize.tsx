@@ -189,6 +189,7 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 </blockquote>
               )
             }
+            case 'autolink':
             case 'link': {
               const fields = node.fields
 
