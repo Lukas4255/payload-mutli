@@ -145,6 +145,11 @@
   --tw-prose-headings: var(--text);
 }
 
+.prose strong,
+.prose b {
+  color: inherit;
+}
+
 .prose h1 {
   font-size: 3.5rem;
   font-weight: normal;
