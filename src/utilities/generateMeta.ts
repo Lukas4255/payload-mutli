@@ -16,9 +16,7 @@ export const generateMeta = async (args: {
     'url' in doc.meta.image &&
     `${getServerSideURL()}`
 
-  const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | Payload Website Template'
-    : 'Payload Website Template'
+  const title = doc?.meta?.title || ''
 
   return {
     description: doc?.meta?.description,
