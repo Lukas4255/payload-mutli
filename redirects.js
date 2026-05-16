@@ -12,7 +12,19 @@ const redirects = async () => {
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
   }
 
-  const redirects = [internetExplorerRedirect]
+  const wwwRedirect = {
+    source: '/:path*',
+    destination: 'https://dorpshuistavenu.nl/:path*',
+    has: [
+      {
+        type: 'host',
+        value: 'www.dorpshuistavenu.nl',
+      },
+    ],
+    permanent: true,
+  }
+
+  const redirects = [internetExplorerRedirect, wwwRedirect]
 
   return redirects
 }
