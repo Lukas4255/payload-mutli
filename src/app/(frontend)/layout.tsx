@@ -88,6 +88,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />
+        <!-- Cloudflare Web Analytics -->
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8aedeb37e0084b7faf27e1117831d800"}'></script>
+        <!-- End Cloudflare Web Analytics -->
       </body>
     </html>
   )
