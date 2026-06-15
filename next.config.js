@@ -61,14 +61,6 @@ const nextConfig = {
             value: '(?<tenant>.*)',
           },
         ],
-        // Skip when middleware already rewrote the path for a ?tenant= override
-        // (staging-only: TENANT_SLUG_OVERRIDE_ENABLED=true).
-        missing: [
-          {
-            type: 'header',
-            key: 'x-tenant-slug',
-          },
-        ],
       },
     ]
   },

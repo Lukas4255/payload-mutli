@@ -10,11 +10,11 @@ import { headers } from 'next/headers'
  * Uses React `cache()` so multiple calls within the same server render
  * (e.g. layout + page component) share a single DB round-trip.
  *
- * When TENANT_SLUG_OVERRIDE_ENABLED=true and domain lookup fails for a value
- * that contains no dots (i.e. it looks like a slug, not a hostname), a second
- * lookup by the `slug` field is attempted. This makes page components work
- * transparently when params.tenant is a slug injected by the staging override
- * middleware instead of the real domain.
+ * When TENANT_SLUG_OVERRIDE_ENABLED=true and the domain lookup finds nothing,
+ * the function checks the x-tenant-slug request header (injected by middleware
+ * from the ?tenant= query param) and retries by slug. This lets staging work
+ * without owning the real domains — params.tenant stays as the staging hostname
+ * but the tenant is resolved via the header fallback.
  *
  * `overrideAccess: true` is intentional — this is an internal infrastructure
  * lookup used for routing, not a user-facing query.
@@ -33,17 +33,25 @@ export const fetchTenantByDomain = cache(async (domain: string): Promise<Tenant 
 
   if (docs[0]) return docs[0]
 
-  // Staging slug fallback: if the value has no dots it can't be a real domain,
-  // so try matching by slug (set by the ?tenant= override middleware).
-  if (process.env.TENANT_SLUG_OVERRIDE_ENABLED === 'true' && !domainClean.includes('.')) {
-    const { docs: slugDocs } = await payload.find({
-      collection: 'tenants',
-      where: { slug: { equals: domainClean } },
-      overrideAccess: true,
-      depth: 1,
-      limit: 1,
-    })
-    return slugDocs[0] || null
+  // Staging slug fallback: when domain lookup fails and the override is enabled,
+  // check the x-tenant-slug header set by middleware from ?tenant=.
+  // Try/catch guards against calling headers() outside request context (build time).
+  if (process.env.TENANT_SLUG_OVERRIDE_ENABLED === 'true') {
+    try {
+      const slugOverride = (await headers()).get('x-tenant-slug')
+      if (slugOverride) {
+        const { docs: slugDocs } = await payload.find({
+          collection: 'tenants',
+          where: { slug: { equals: slugOverride } },
+          overrideAccess: true,
+          depth: 1,
+          limit: 1,
+        })
+        return slugDocs[0] || null
+      }
+    } catch {
+      // headers() throws outside of a request context — no-op
+    }
   }
 
   return null
@@ -52,8 +60,7 @@ export const fetchTenantByDomain = cache(async (domain: string): Promise<Tenant 
 /**
  * Resolves a Tenant document by its slug field.
  *
- * Used by the staging tenant-slug override flow when `x-tenant-slug` header
- * is present on the request (set by middleware from the `?tenant=` query param).
+ * Used by resolveTenant() when the x-tenant-slug header is present.
  */
 export const fetchTenantBySlug = cache(async (slug: string): Promise<Tenant | null> => {
   const payload = await getPayload({ config: configPromise })
@@ -70,22 +77,23 @@ export const fetchTenantBySlug = cache(async (slug: string): Promise<Tenant | nu
 })
 
 /**
- * Resolves the current tenant for a server component, with staging override
- * support. When TENANT_SLUG_OVERRIDE_ENABLED=true and the request carries an
- * `x-tenant-slug` header (injected by middleware from `?tenant=`), lookup is
- * done by slug. Otherwise falls back to the standard domain lookup.
+ * Resolves the current tenant for a server component that reads the host
+ * header directly (layout, sitemap, robots, content blocks). Checks the
+ * x-tenant-slug header first when TENANT_SLUG_OVERRIDE_ENABLED=true so
+ * staging requests with ?tenant= are resolved by slug rather than domain.
  *
- * Use this wherever the caller reads the host header itself and passes it to
- * fetchTenantByDomain — layout, sitemap, robots, and content blocks.
- * Page components that use params.tenant can keep using fetchTenantByDomain
- * directly; the slug fallback in that function handles them.
+ * Page components that receive params.tenant don't need this — the slug
+ * fallback inside fetchTenantByDomain handles them automatically.
  */
 export const resolveTenant = async (host: string): Promise<Tenant | null> => {
   if (process.env.TENANT_SLUG_OVERRIDE_ENABLED === 'true') {
-    const headersList = await headers()
-    const slugOverride = headersList.get('x-tenant-slug')
-    if (slugOverride) {
-      return fetchTenantBySlug(slugOverride)
+    try {
+      const slugOverride = (await headers()).get('x-tenant-slug')
+      if (slugOverride) {
+        return fetchTenantBySlug(slugOverride)
+      }
+    } catch {
+      // Outside request context — fall through to domain lookup
     }
   }
   return fetchTenantByDomain(host)

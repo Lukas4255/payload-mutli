@@ -6,24 +6,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const { pathname, searchParams } = request.nextUrl
-  const tenantSlug = searchParams.get('tenant')
-
+  const tenantSlug = request.nextUrl.searchParams.get('tenant')
   if (!tenantSlug) {
     return NextResponse.next()
   }
 
-  // Rewrite /{path}?tenant=slug → /{slug}/{path} and forward the slug as a
-  // request header so server components can resolve the tenant by slug instead
-  // of by domain (layout, blocks, etc. all read x-tenant-slug).
-  const url = request.nextUrl.clone()
-  url.pathname = `/${tenantSlug}${pathname === '/' ? '' : pathname}`
-  url.searchParams.delete('tenant')
-
+  // Forward the slug as a request header so server components can resolve the
+  // tenant by slug instead of by domain (layout, blocks, page components).
+  // We deliberately do NOT rewrite the URL — the hostname-based rewrite in
+  // next.config.js continues to run normally, and fetchTenantByDomain reads
+  // this header as a fallback when its domain lookup returns nothing.
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-tenant-slug', tenantSlug)
 
-  return NextResponse.rewrite(url, {
+  return NextResponse.next({
     request: { headers: requestHeaders },
   })
 }
