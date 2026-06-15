@@ -29,7 +29,7 @@ import { Providers } from '@/providers'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 import { headers } from 'next/headers'
-import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { resolveTenant } from '@/utilities/fetchTenantByDomain'
 import { hexToHSL } from '@/utilities/hexToHSL'
 import type { Media } from '@/payload-types'
 import { notFound } from 'next/navigation'
@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const headersList = await headers()
   const host = headersList.get('host') || ''
   console.log('Host:', host)
-  const tenant = await fetchTenantByDomain(host)
+  const tenant = await resolveTenant(host)
 
   if (!tenant) {
     return notFound()

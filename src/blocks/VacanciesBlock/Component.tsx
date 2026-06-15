@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 
 import { CMSLink } from '@/components/Link'
-import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { resolveTenant } from '@/utilities/fetchTenantByDomain'
 
 export const VacanciesBlockComponent: React.FC<VacanciesBlockProps & { id?: string }> = async (
   props,
@@ -21,7 +21,7 @@ export const VacanciesBlockComponent: React.FC<VacanciesBlockProps & { id?: stri
   // memoised via React cache() so this shares the DB result with the layout.
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  const tenant = await fetchTenantByDomain(host)
+  const tenant = await resolveTenant(host)
 
   const payload = await getPayload({ config: configPromise })
 

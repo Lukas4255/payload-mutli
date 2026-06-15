@@ -2,12 +2,12 @@ import type { MetadataRoute } from 'next'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
-import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { resolveTenant } from '@/utilities/fetchTenantByDomain'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  const tenant = await fetchTenantByDomain(host)
+  const tenant = await resolveTenant(host)
   if (!tenant) return []
 
   const baseUrl = `https://${tenant.domain}`

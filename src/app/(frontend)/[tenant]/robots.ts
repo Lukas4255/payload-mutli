@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
-import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { resolveTenant } from '@/utilities/fetchTenantByDomain'
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  const tenant = await fetchTenantByDomain(host)
+  const tenant = await resolveTenant(host)
   if (!tenant) {
     return { rules: { disallow: '/' } }
   }

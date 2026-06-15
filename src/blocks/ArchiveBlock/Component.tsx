@@ -8,7 +8,7 @@ import React from 'react'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { CMSLink } from '@/components/Link'
-import { fetchTenantByDomain } from '@/utilities/fetchTenantByDomain'
+import { resolveTenant } from '@/utilities/fetchTenantByDomain'
 
 export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = async (props) => {
   const {
@@ -28,7 +28,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = async
   // memoised via React cache() so this shares the DB result with the layout.
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  const tenant = await fetchTenantByDomain(host)
+  const tenant = await resolveTenant(host)
 
   let posts: Post[] = []
 

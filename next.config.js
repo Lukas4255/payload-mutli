@@ -35,7 +35,7 @@ const nextConfig = {
 
     return webpackConfig
   },
-  allowedDevOrigins: ['dorpshuistavenu.nl'],
+  allowedDevOrigins: ['dorpshuistavenu.nl', 'sporthalparkzicht.nl', 'dorpshuisdalburcht.nl'],
   reactStrictMode: true,
   redirects,
 
@@ -59,6 +59,14 @@ const nextConfig = {
           {
             type: 'host',
             value: '(?<tenant>.*)',
+          },
+        ],
+        // Skip when middleware already rewrote the path for a ?tenant= override
+        // (staging-only: TENANT_SLUG_OVERRIDE_ENABLED=true).
+        missing: [
+          {
+            type: 'header',
+            key: 'x-tenant-slug',
           },
         ],
       },
