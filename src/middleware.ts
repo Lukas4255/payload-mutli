@@ -4,6 +4,11 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Allow Railway's healthcheck through before any auth gate.
+  if (pathname === '/api/health') {
+    return NextResponse.next()
+  }
+
   // ── Basic Auth gate ────────────────────────────────────────────────────────
   // Protects the entire staging site (including /admin and /api) when
   // STAGING_BASIC_AUTH_USER and STAGING_BASIC_AUTH_PASS are set.
