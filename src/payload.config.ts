@@ -28,6 +28,10 @@ export default buildConfig({
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
       beforeNavLinks: ['@/components/AdminFavicon#AdminFavicon'],
+      graphics: {
+        Logo: '@/components/AdminLogo#AdminLogo',
+        Icon: '@/components/AdminLogo#AdminLogo',
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),
