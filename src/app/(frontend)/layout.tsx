@@ -42,7 +42,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  console.log('Host:', host)
   const tenant = await resolveTenant(host)
 
   if (!tenant) {

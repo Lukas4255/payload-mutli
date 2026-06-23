@@ -38,7 +38,15 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             return (
               // Outer wrapper — padding gives the rotated corners room to breathe
               // without overlapping the neighbouring image
-              <div key={item.id ?? i} className="shrink-0 p-6">
+              <div
+                key={item.id ?? i}
+                className="shrink-0 p-6"
+                style={{
+                  opacity: 0,
+                  animation: 'hero-image-fade-in 0.7s ease-out forwards',
+                  animationDelay: `${i * 150}ms`,
+                }}
+              >
                 <div
                   className="relative overflow-hidden rounded-2xl"
                   style={{ width, height, transform: `rotate(${rotate}deg)` }}

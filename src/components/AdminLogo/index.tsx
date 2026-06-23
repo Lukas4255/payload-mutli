@@ -5,7 +5,7 @@ export const AdminLogo: React.FC = () => {
     <img
       src="/rentree-logo.svg"
       alt="Rentree"
-      style={{ maxWidth: '240px', height: 'auto' }}
+      style={{ maxWidth: '280px', height: 'auto' }}
     />
   )
 }
