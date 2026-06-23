@@ -63,24 +63,24 @@ export const AgendaBlockComponent: React.FC<AgendaBlockProps & { id?: string }> 
                     )}
                   </span>
 
-                  {/* Title */}
-                  <div className="flex-1 min-w-0">
+                  {/* Title + Badge */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                     <p className="font-semibold text-foreground text-base leading-snug">
                       {event.title}
                     </p>
+                    {event.date && (
+                      <span className="self-start shrink-0 text-sm font-bold text-foreground bg-secondary px-3 py-1 rounded-full whitespace-nowrap sm:self-center">
+                        {event.date}
+                      </span>
+                    )}
                   </div>
-
-                  {/* Date badge */}
-                  <span className="shrink-0 text-sm font-bold text-foreground bg-secondary px-3 py-1 rounded-full whitespace-nowrap">
-                    {event.date}
-                  </span>
 
                   {/* External link indicator */}
                   {event.url && <ExternalLinkIcon />}
                 </>
               )
 
-              const rowClass = 'group flex items-center gap-5 px-6 py-5 transition-colors'
+              const rowClass = 'group flex items-center gap-3 px-4 py-4 sm:gap-5 sm:px-6 sm:py-5 transition-colors'
 
               return event.url ? (
                 <a
