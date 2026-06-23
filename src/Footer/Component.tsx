@@ -58,12 +58,13 @@ export async function Footer({ tenant }: FooterProps) {
       <div className="container py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-          {/* ── Column 1: Menu ────────────────────────────────── */}
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">
-              Menu
-            </p>
-            {menuItems.length > 0 && (
+          {/* ── Column 1: Menu (hidden when empty, spacer keeps cols 2-3 right-aligned) ── */}
+          {menuItems.length === 0 && <div />}
+          {menuItems.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+                Menu
+              </p>
               <nav className="flex flex-col gap-3">
                 {menuItems.map(({ link }, i) => (
                   <CMSLink
@@ -73,8 +74,8 @@ export async function Footer({ tenant }: FooterProps) {
                   />
                 ))}
               </nav>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ── Column 2: Social ──────────────────────────────── */}
           <div>
