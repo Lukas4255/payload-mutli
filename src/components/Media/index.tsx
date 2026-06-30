@@ -4,6 +4,7 @@ import type { Props } from './types'
 
 import { ImageMedia } from './ImageMedia'
 import { VideoMedia } from './VideoMedia'
+import { PdfMedia } from './PdfMedia'
 
 export const Media: React.FC<Props> = (props) => {
   const { className, fill, htmlElement, resource } = props
@@ -14,7 +15,12 @@ export const Media: React.FC<Props> = (props) => {
   const resolvedElement = htmlElement !== undefined ? htmlElement : fill ? null : 'div'
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
+  const isPdf = typeof resource === 'object' && resource?.mimeType === 'application/pdf'
   const Tag = (resolvedElement as any) || Fragment
+
+  if (isPdf) {
+    return <PdfMedia {...props} />
+  }
 
   return (
     <Tag

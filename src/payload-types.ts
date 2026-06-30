@@ -205,7 +205,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
     /**
-     * Add up to 5 images. Each will be displayed square with a slight rotation.
+     * High Impact: up to 5 images (square, rotated). Medium Impact: exactly 3 images (left, center, right).
      */
     images?:
       | {
@@ -214,12 +214,12 @@ export interface Page {
         }[]
       | null;
     /**
-     * Small label shown above the heading, e.g. "Welkom"
+     * High Impact: small label above heading. Medium Impact: current page label in the breadcrumb.
      */
     eyebrow?: string | null;
     heading?: string | null;
     /**
-     * Short intro paragraph shown in the right column
+     * High Impact: right-column paragraph. Medium Impact: centered paragraph below heading.
      */
     introText?: string | null;
     /**

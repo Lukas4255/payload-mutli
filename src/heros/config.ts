@@ -42,7 +42,7 @@ export const hero: Field = {
       name: 'richText',
       type: 'richText',
       admin: {
-        condition: (_, { type } = {}) => type === 'mediumImpact',
+        condition: () => false,
       },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
@@ -65,10 +65,10 @@ export const hero: Field = {
       name: 'media',
       type: 'upload',
       admin: {
-        condition: (_, { type } = {}) => type === 'mediumImpact',
+        condition: () => false,
       },
       relationTo: 'media',
-      required: true,
+      required: false,
     },
     {
       name: 'images',
@@ -77,8 +77,8 @@ export const hero: Field = {
       minRows: 1,
       maxRows: 5,
       admin: {
-        condition: (_, { type } = {}) => type === 'highImpact',
-        description: 'Add up to 5 images. Each will be displayed square with a slight rotation.',
+        condition: (_, { type } = {}) => type === 'highImpact' || type === 'mediumImpact',
+        description: 'High Impact: up to 5 images (square, rotated). Medium Impact: exactly 3 images (left, center, right).',
       },
       fields: [
         {
@@ -92,10 +92,10 @@ export const hero: Field = {
     {
       name: 'eyebrow',
       type: 'text',
-      label: 'Eyebrow',
+      label: 'Eyebrow / Breadcrumb label',
       admin: {
-        condition: (_, { type } = {}) => type === 'highImpact',
-        description: 'Small label shown above the heading, e.g. "Welkom"',
+        condition: (_, { type } = {}) => type === 'highImpact' || type === 'mediumImpact',
+        description: 'High Impact: small label above heading. Medium Impact: current page label in the breadcrumb.',
       },
     },
     {
@@ -103,7 +103,7 @@ export const hero: Field = {
       type: 'text',
       label: 'Heading',
       admin: {
-        condition: (_, { type } = {}) => type === 'highImpact',
+        condition: (_, { type } = {}) => type === 'highImpact' || type === 'mediumImpact',
       },
     },
     {
@@ -111,8 +111,8 @@ export const hero: Field = {
       type: 'textarea',
       label: 'Intro Text',
       admin: {
-        condition: (_, { type } = {}) => type === 'highImpact',
-        description: 'Short intro paragraph shown in the right column',
+        condition: (_, { type } = {}) => type === 'highImpact' || type === 'mediumImpact',
+        description: 'High Impact: right-column paragraph. Medium Impact: centered paragraph below heading.',
       },
     },
     {
