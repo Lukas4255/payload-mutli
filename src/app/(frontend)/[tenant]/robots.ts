@@ -15,7 +15,10 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   return {
     rules: {
       userAgent: '*',
-      allow: '/',
+      // Allow /api/media/ so Google can fetch the tenant favicon (served at
+      // /api/media/file/...). Without this, Google falls back to the root
+      // /favicon.ico (the Payload default) in search results.
+      allow: ['/', '/api/media/'],
       disallow: ['/admin/', '/api/'],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
