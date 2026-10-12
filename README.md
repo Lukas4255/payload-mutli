@@ -66,6 +66,12 @@ Use one-click deploy template:
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/L8TUlT?referralCode=-Yg50p)
 
+Memory and network settings for Railway:
+
+- `pnpm start` caps the Node heap at 768 MB (`--max-old-space-size=768`). Without a cap, Node sizes its heap from the container limit and idles at ~1.5 GB, which Railway bills per GB-minute.
+- Set `MALLOC_ARENA_MAX=2` on the service to limit glibc memory fragmentation from `sharp` image processing.
+- Railway's private network is not reachable during the build, which runs `payload migrate` and static generation. Keep `DATABASE_URI` on the public Postgres URL for the build and set `DATABASE_RUNTIME_URI=${{Postgres.DATABASE_URL}}` so the running server uses the private network (no egress costs).
+
 ### Local Setup
 
 1. Clone proejct: (recommeded) Laucnh on Railway and ejct [watch how](https://www.youtube.com/watch?v=LJFek8JP8TE). Alternatively clone this repo or fork it.
