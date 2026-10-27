@@ -14,6 +14,11 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
+// The frontend layout resolves the tenant from the request host via headers(), so these pages
+// are rendered per request. Without this, a build against a database with no matching documents
+// marks the route as static and every later request fails with DYNAMIC_SERVER_USAGE.
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const posts = await payload.find({

@@ -85,7 +85,9 @@ or
 
 ### End-to-End Testing
 
-The Playwright suite boots a fresh PostgreSQL container, builds the app from scratch, creates the first admin user through the onboarding UI, seeds the demo content, submits a public comment, approves it in the admin UI, and verifies it appears on the public post page.
+The Playwright suite boots a fresh PostgreSQL container, builds the app from scratch, creates the first admin user (with the `super-admin` role) through the onboarding UI, seeds the demo content via `POST /next/seed`, checks the seeded posts on the public site, submits a visitor comment through the public comments API, approves it in the admin UI, and verifies it is only publicly readable after approval.
+
+The seed is tenant-scoped: it creates (or reuses) a `demo` tenant whose domain is the host the seed is triggered on (`127.0.0.1` in e2e), and only clears and recreates that tenant's content. Categories are shared and reused by title. It refuses to run on a host that belongs to another tenant, and `/next/seed` is restricted to super-admins.
 
 Before the first run, make sure Docker Desktop is running. The suite starts a fresh PostgreSQL container automatically.
 For test determinism, the e2e harness uses bundled local seed images only during the test run. Normal seeding continues to use the hosted seed images.

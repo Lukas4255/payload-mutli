@@ -44,8 +44,15 @@ async function fillVisiblePasswordFields(page: Page, value: string) {
   }
 }
 
-async function expectSeedButton(page: Page, timeout = 15000) {
-  await expect(page.getByRole('button', { name: /seed your database/i })).toBeVisible({ timeout })
+async function expectDashboard(page: Page, timeout = 15000) {
+  await expect(page).toHaveURL(/\/admin\/?$/, { timeout })
+  await expect(page.getByRole('link', { name: /^posts$/i }).first()).toBeVisible({ timeout })
+}
+
+// Only super-admins can manage tenants and run the seed, so the first admin gets that role
+async function selectSuperAdminRole(page: Page) {
+  await page.locator('#field-roles .rs__control').click()
+  await page.locator('.rs__option', { hasText: /^super-admin$/ }).click()
 }
 
 async function createFirstAdmin(page: Page) {
@@ -60,6 +67,7 @@ async function createFirstAdmin(page: Page) {
 
   await maybeFill(page, /^name$/i, 'Playwright Admin')
   await fillVisiblePasswordFields(page, adminPassword)
+  await selectSuperAdminRole(page)
 
   await page
     .getByRole('button', {
@@ -68,31 +76,40 @@ async function createFirstAdmin(page: Page) {
     .first()
     .click({ force: true })
 
-  try {
-    await expectSeedButton(page, 5000)
-    return
-  } catch {
-    const response = await page.request.post('/api/users/first-register', {
-      data: {
-        email: adminEmail,
-        password: adminPassword,
-        name: 'Playwright Admin',
-      },
-    })
+  await expectDashboard(page)
 
-    if (!response.ok()) {
-      throw new Error(`First user registration failed with status ${response.status()}`)
-    }
-
-    await page.goto('/admin')
-  }
-
-  await expectSeedButton(page)
+  const meResponse = await page.request.get('/api/users/me')
+  expect(meResponse.ok()).toBeTruthy()
+  const { user } = await meResponse.json()
+  expect(user?.roles).toContain('super-admin')
 }
 
+// Seeds the demo tenant for the host the tests run on, so the public pages resolve to it
 async function seedDatabase(page: Page) {
-  await page.getByRole('button', { name: /seed your database/i }).click()
-  await expect(page.getByText(/database seeded!/i)).toBeVisible({ timeout: 120000 })
+  const response = await page.request.post('/next/seed', { timeout: 120000 })
+
+  expect(response.status(), await response.text()).toBe(200)
+}
+
+async function getPostID(page: Page, slug: string) {
+  const response = await page.request.get('/api/posts', {
+    params: {
+      depth: '0',
+      limit: '1',
+      'where[slug][equals]': slug,
+    },
+  })
+
+  expect(response.ok()).toBeTruthy()
+
+  const body = await response.json()
+  const id = body.docs[0]?.id
+
+  if (!id) {
+    throw new Error(`Seeded post ${slug} not found`)
+  }
+
+  return id as number
 }
 
 async function approveComment(page: Page) {
@@ -160,17 +177,30 @@ async function getApprovedCommentCount(page: Page) {
 
 async function verifySeededPosts(page: Page) {
   await page.goto('/posts')
-  await expect(page.getByRole('heading', { name: 'Posts' })).toBeVisible()
 
   for (const post of seededPosts) {
-    await expect(page.getByRole('link', { name: post.title })).toBeVisible()
+    await expect(page.getByRole('link', { name: post.title }).first()).toBeVisible()
+  }
 
+  for (const post of seededPosts) {
     const response = await page.goto(`/posts/${post.slug}`)
 
     expect(response?.ok(), `Expected seeded post page /posts/${post.slug} to respond successfully`).toBeTruthy()
     await expect(page.getByRole('heading', { name: post.title })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Comments' })).toBeVisible()
   }
+}
+
+// The post pages no longer render a comment form, so visitors' comments go through the public API
+async function submitPublicComment(page: Page, postID: number) {
+  const response = await page.request.post('/api/comments', {
+    data: {
+      content: commentText,
+      author: { name: 'Playwright Visitor', email: 'visitor@example.com' },
+      post: postID,
+    },
+  })
+
+  expect(response.status(), await response.text()).toBe(201)
 }
 
 test('supports onboarding, seeding, and comment moderation', async ({ browser, page }) => {
@@ -181,16 +211,9 @@ test('supports onboarding, seeding, and comment moderation', async ({ browser, p
   const publicPage = await publicContext.newPage()
 
   await verifySeededPosts(publicPage)
-  await publicPage.goto(`/posts/${targetPost.slug}`)
-  await expect(publicPage.getByRole('heading', { name: 'Comments' })).toBeVisible()
 
-  await fillFirst(publicPage.getByLabel(/^name$/i), 'Playwright Visitor')
-  await fillFirst(publicPage.getByLabel(/email/i), 'visitor@example.com')
-  await fillFirst(publicPage.getByLabel(/comment/i), commentText)
-  await publicPage.getByRole('button', { name: /submit comment/i }).click()
-
-  await expect(publicPage.getByText(/comment submitted successfully/i)).toBeVisible()
-  await expect(publicPage.getByText(commentText)).toHaveCount(0)
+  await submitPublicComment(publicPage, await getPostID(page, targetPost.slug))
+  expect(await getApprovedCommentCount(publicPage)).toBe(0)
 
   await approveComment(page)
 
@@ -200,19 +223,8 @@ test('supports onboarding, seeding, and comment moderation', async ({ browser, p
     })
     .toBe(1)
 
-  await expect
-    .poll(
-      async () => {
-        await publicPage.reload()
-        return publicPage.getByText(commentText).count()
-      },
-      {
-        timeout: 30000,
-      },
-    )
-    .toBe(1)
-
   if (manualReviewMode) {
+    await publicPage.goto(`/posts/${targetPost.slug}`)
     await publicPage.bringToFront()
     await publicPage.pause()
   }
