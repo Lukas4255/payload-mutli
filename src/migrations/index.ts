@@ -3,6 +3,7 @@ import * as migration_20241214_124128 from './20241214_124128';
 import * as migration_20260222_003500_payload_3_77_compat from './20260222_003500_payload_3_77_compat';
 import * as migration_20260511_183129 from './20260511_183129';
 import * as migration_20260512_181009 from './20260512_181009';
+import * as migration_20261027_200513_mcp_api_keys from './20261027_200513_mcp_api_keys';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20260512_181009.up,
     down: migration_20260512_181009.down,
-    name: '20260512_181009'
+    name: '20260512_181009',
+  },
+  {
+    up: migration_20261027_200513_mcp_api_keys.up,
+    down: migration_20261027_200513_mcp_api_keys.down,
+    name: '20261027_200513_mcp_api_keys'
   },
 ];

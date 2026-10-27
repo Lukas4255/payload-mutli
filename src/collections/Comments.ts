@@ -1,5 +1,5 @@
 import { CollectionConfig } from 'payload'
-import { authenticated } from '../access/authenticated'
+import { authenticated, isUser } from '../access/authenticated'
 import { revalidatePath } from 'next/cache'
 
 export const Comments: CollectionConfig = {
@@ -10,7 +10,7 @@ export const Comments: CollectionConfig = {
   },
   access: {
     read: ({ req: { user } }) => {
-      if (user) {
+      if (isUser(user)) {
         return true
       }
 

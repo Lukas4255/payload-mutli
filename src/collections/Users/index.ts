@@ -1,7 +1,7 @@
-import type { CollectionConfig, Where } from 'payload'
+import type { CollectionConfig, TypedUser, Where } from 'payload'
 
 import { tenantsArrayField } from '@payloadcms/plugin-multi-tenant/fields'
-import { authenticated } from '../../access/authenticated'
+import { authenticated, isUser } from '../../access/authenticated'
 import { isSuperAdmin } from '../../access/isSuperAdmin'
 import { adminTenantIds } from '../../access/tenantAdmin'
 import type { User } from '../../payload-types'
@@ -9,7 +9,7 @@ import { protectTenantMemberships } from './hooks/protectTenantMemberships'
 import { setCookieBasedOnDomain } from './hooks/setCookieBasedOnDomain'
 
 /** Super-admins, and tenant-admins for the tenants they administer. */
-const canManageMemberships = ({ req: { user } }: { req: { user: User | null } }): boolean =>
+const canManageMemberships = ({ req: { user } }: { req: { user: TypedUser | null } }): boolean =>
   isSuperAdmin(user) || adminTenantIds(user).length > 0
 
 /**
@@ -67,14 +67,14 @@ export const Users: CollectionConfig = {
     admin: authenticated,
     create: canManageMemberships,
     delete: ({ req: { user } }) => {
-      if (!user) return false
+      if (!isUser(user)) return false
       if (isSuperAdmin(user)) return true
       return managedUsers(user)
     },
     read: authenticated,
     /** Everyone may edit their own account; tenant-admins also the users they manage. */
     update: ({ req: { user } }) => {
-      if (!user) return false
+      if (!isUser(user)) return false
       if (isSuperAdmin(user)) return true
       const self: Where = { id: { equals: user.id } }
       const managed = managedUsers(user)

@@ -59,6 +59,23 @@ This boilerplate is a pre-configured, ready-to-deploy solution for Payload CMS a
 - **SEO**: Built-in SEO optimization tools
 - **Redirects**: Easy management of URL redirects
 - **PostgreSQL Support**: Configured for both local and production use
+- **MCP server**: `@payloadcms/plugin-mcp` exposes an MCP endpoint (see below)
+
+### MCP Server
+
+The [MCP plugin](https://payloadcms.com/docs/plugins/mcp) serves an MCP endpoint at `POST /api/mcp` so AI clients (Claude, Cursor, VS Code, ...) can read and edit content.
+
+- Exposed: `pages`, `posts`, `vacancies` and `categories` (find/create/update), `media`, `comments`, `header` and `footer` (find/update), `tenants` (find). Deletes are never exposed. Configured in `src/plugins/index.ts`.
+- Keys are managed under **MCP → API Keys** in the admin panel, by super-admins only. Each key is tied to a user and only gets the capabilities ticked on that key. Requests run as that user, so normal access control and tenant scoping still apply; a key owned by a super-admin can reach every tenant.
+- An API key is never treated as a signed-in user outside `/api/mcp` (see `isUser` in `src/access/authenticated.ts`).
+
+Connect Claude Code (the key is shown once when you create it):
+
+```bash
+claude mcp add --transport http Payload https://<your-domain>/api/mcp --header "Authorization: Bearer <API_KEY>"
+```
+
+On staging, `STAGING_BASIC_AUTH_*` also protects `/api/mcp`, so MCP clients cannot reach it there unless Basic Auth is off.
 
 ### Railway Setup
 

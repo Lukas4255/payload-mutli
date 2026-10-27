@@ -1,4 +1,8 @@
+import type { TypedUser } from 'payload'
+
 import type { User } from '@/payload-types'
+
+import { isUser } from './authenticated'
 
 type TenantRow = NonNullable<User['tenants']>[number]
 
@@ -8,8 +12,8 @@ export const tenantIdOf = (row: Pick<TenantRow, 'tenant'>): number | undefined =
 }
 
 /** Tenant IDs where the user holds the tenant-admin role. */
-export const adminTenantIds = (user: User | null): number[] => {
-  if (!user?.tenants?.length) return []
+export const adminTenantIds = (user: TypedUser | null): number[] => {
+  if (!isUser(user) || !user.tenants?.length) return []
   return user.tenants
     .filter((t) => t.roles?.includes('tenant-admin'))
     .map(tenantIdOf)
