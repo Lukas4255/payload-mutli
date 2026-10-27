@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { isUser } from '@/access/authenticated'
 import { isSuperAdmin, isSuperAdminAccess } from '@/access/isSuperAdmin'
 import { adminTenantIds } from '@/access/tenantAdmin'
 import type { User } from '@/payload-types'
@@ -25,7 +26,7 @@ export const Tenants: CollectionConfig = {
      * Unauthenticated requests are denied.
      */
     read: ({ req: { user } }) => {
-      if (!user) return false
+      if (!isUser(user)) return false
       if (isSuperAdmin(user)) return true
       const ids = memberTenantIds(user)
       if (!ids.length) return false
@@ -40,7 +41,7 @@ export const Tenants: CollectionConfig = {
      * Tenant-admins may update only their own tenant(s).
      */
     update: ({ req: { user } }) => {
-      if (!user) return false
+      if (!isUser(user)) return false
       if (isSuperAdmin(user)) return true
       const ids = adminTenantIds(user)
       if (!ids.length) return false
