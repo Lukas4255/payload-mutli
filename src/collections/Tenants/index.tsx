@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isSuperAdmin, isSuperAdminAccess } from '@/access/isSuperAdmin'
+import { adminTenantIds } from '@/access/tenantAdmin'
 import type { User } from '@/payload-types'
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -9,15 +10,6 @@ import type { User } from '@/payload-types'
 const memberTenantIds = (user: User | null): number[] => {
   if (!user?.tenants?.length) return []
   return user.tenants
-    .map((t) => (typeof t.tenant === 'number' ? t.tenant : t.tenant?.id))
-    .filter((id): id is number => typeof id === 'number')
-}
-
-/** Tenant IDs where the user holds the tenant-admin role. */
-const adminTenantIds = (user: User | null): number[] => {
-  if (!user?.tenants?.length) return []
-  return user.tenants
-    .filter((t) => t.roles?.includes('tenant-admin'))
     .map((t) => (typeof t.tenant === 'number' ? t.tenant : t.tenant?.id))
     .filter((id): id is number => typeof id === 'number')
 }

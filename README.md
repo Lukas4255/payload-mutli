@@ -51,7 +51,7 @@ This boilerplate is a pre-configured, ready-to-deploy solution for Payload CMS a
 ## Preconfigured Features & Integrations
 
 - **Authentication**: Robust user authentication system
-- **Access Control**: Role-based access control for admins and users
+- **Access Control**: Role-based access control for admins and users. Only super-admins can grant the `super-admin` role (except the first user created during onboarding). Tenant-admins can create, edit and delete the non-super-admin users of the tenants they administer. Everyone else can only edit their own account and cannot change their own tenant memberships.
 - **Premium Content**: Gated content for authenticated users
 - **Comments**: User commenting system with admin approval
 - **Layout Builder**: Flexible content creation with pre-configured blocks
