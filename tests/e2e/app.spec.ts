@@ -219,3 +219,13 @@ test('supports onboarding, seeding, and comment moderation', async ({ browser, p
 
   await publicContext.close()
 })
+
+test('redirects www hosts to their apex domain', async ({ request }) => {
+  const response = await request.get('/posts?page=2', {
+    headers: { host: 'www.example-tenant.nl' },
+    maxRedirects: 0,
+  })
+
+  expect(response.status()).toBe(308)
+  expect(response.headers()['location']).toBe('https://example-tenant.nl/posts?page=2')
+})

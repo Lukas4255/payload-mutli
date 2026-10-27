@@ -12,13 +12,14 @@ const redirects = async () => {
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
   }
 
+  // Tenants are resolved by their apex domain, so send every www host to its apex.
   const wwwRedirect = {
     source: '/:path*',
-    destination: 'https://dorpshuistavenu.nl/:path*',
+    destination: 'https://:domain/:path*',
     has: [
       {
         type: 'host',
-        value: 'www.dorpshuistavenu.nl',
+        value: 'www\\.(?<domain>.+)',
       },
     ],
     permanent: true,
