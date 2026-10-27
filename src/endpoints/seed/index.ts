@@ -1,4 +1,5 @@
-import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import type { CollectionSlug, Payload, PayloadRequest, File, Where } from 'payload'
+import type { Tenant } from '@/payload-types'
 import path from 'path'
 import { promises as fs } from 'fs'
 import { fileURLToPath } from 'url'
@@ -15,17 +16,21 @@ import { post2 } from './post-2'
 import { post3 } from './post-3'
 import { post4 } from './post-4'
 
-const collections: CollectionSlug[] = [
-  'categories',
-  'media',
-  'pages',
+// The seed only ever touches the demo tenant, so it can't wipe content belonging to real tenants.
+const demoTenantSlug = 'demo'
+
+// Tenant-scoped collections that are cleared for the demo tenant before seeding.
+// Categories are shared between tenants, so they are reused by title instead of deleted.
+const tenantCollections: CollectionSlug[] = [
+  'search',
   'posts',
-  'forms',
+  'pages',
   'form-submissions',
-  'search'
+  'forms',
+  'media',
+  'header',
+  'footer'
 ]
-// @ts-ignore – in this multi-tenant setup header/footer are collections, not Payload globals
-const globals: GlobalSlug[] = ['header', 'footer']
 
 const seedDirectory = path.dirname(fileURLToPath(import.meta.url))
 
@@ -68,6 +73,75 @@ async function loadSeedFile(filename: string, outputName = filename): Promise<Fi
   }
 }
 
+// Finds or creates the demo tenant and points it at `domain`, refusing to take over a domain
+// that already belongs to another tenant.
+async function getDemoTenant(payload: Payload, domain: string): Promise<Tenant> {
+  const {
+    docs: [domainOwner]
+  } = await payload.find({
+    collection: 'tenants',
+    where: { domain: { equals: domain } },
+    depth: 0,
+    limit: 1
+  })
+
+  if (domainOwner && domainOwner.slug !== demoTenantSlug) {
+    throw new Error(
+      `Refusing to seed: domain "${domain}" belongs to tenant "${domainOwner.name}". Seed from a host that is not in use by a real tenant.`
+    )
+  }
+
+  const {
+    docs: [demoTenant]
+  } = await payload.find({
+    collection: 'tenants',
+    where: { slug: { equals: demoTenantSlug } },
+    depth: 0,
+    limit: 1
+  })
+
+  if (!demoTenant) {
+    return payload.create({
+      collection: 'tenants',
+      data: { name: 'Demo', slug: demoTenantSlug, domain }
+    })
+  }
+
+  if (demoTenant.domain !== domain) {
+    return payload.update({
+      id: demoTenant.id,
+      collection: 'tenants',
+      data: { domain }
+    })
+  }
+
+  return demoTenant
+}
+
+async function clearDocs(payload: Payload, collection: CollectionSlug, where: Where) {
+  // Bulk deletes report per-document failures instead of throwing
+  const { errors } = await payload.delete({ collection, where })
+
+  if (errors.length) {
+    throw new Error(
+      `Failed to clear ${collection}: ${errors.map((error) => error.message).join(', ')}`
+    )
+  }
+}
+
+async function findOrCreateCategory(payload: Payload, title: string) {
+  const {
+    docs: [existing]
+  } = await payload.find({
+    collection: 'categories',
+    where: { title: { equals: title } },
+    depth: 0,
+    limit: 1
+  })
+
+  return existing ?? payload.create({ collection: 'categories', data: { title } })
+}
+
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
 // The app is not running to revalidate the pages and so the API routes are not available
@@ -75,9 +149,12 @@ async function loadSeedFile(filename: string, outputName = filename): Promise<Fi
 export const seed = async ({
   payload,
   req,
+  tenantDomain,
 }: {
   payload: Payload
   req: PayloadRequest
+  // Domain the demo tenant is served from, usually the host the seed was triggered on
+  tenantDomain: string
 }): Promise<void> => {
   const previousDisableSearchSync = process.env.DISABLE_SEARCH_SYNC
 
@@ -87,44 +164,19 @@ export const seed = async ({
     req.context.disableSearchSync = true
     payload.logger.info('Seeding database...')
 
-    // we need to clear the media directory before seeding
-    // as well as the collections and globals
-    // this is because while `yarn seed` drops the database
-    // the custom `/api/seed` endpoint does not
+    payload.logger.info(`- Resolving demo tenant for ${tenantDomain}...`)
 
-    payload.logger.info(`- Clearing media...`)
-    payload.logger.info(`- Clearing collections and globals...`)
+    const tenant = await getDemoTenant(payload, tenantDomain)
+    const tenantID = tenant.id
 
-    // First, clear the search collection to avoid ID conflicts
-    await payload.delete({
-      collection: 'search',
-      where: {
-        id: {
-          exists: true
-        }
-      }
-    })
+    // Clear the demo tenant's previous seed content, including its media files
+    payload.logger.info(`- Clearing demo tenant content...`)
 
-    // clear the database
-    for (const global of globals) {
-      await (payload as any).updateGlobal({
-        slug: global,
-        data: {
-          navItems: []
-        }
-      })
-    }
+    // Comments require their post, so the ones on demo posts have to go before the posts do
+    await clearDocs(payload, 'comments', { 'post.tenant': { equals: tenantID } })
 
-    // Then clear other collections
-    for (const collection of collections.filter(c => c !== 'search')) {
-      await payload.delete({
-        collection: collection,
-        where: {
-          id: {
-            exists: true
-          }
-        }
-      })
+    for (const collection of tenantCollections) {
+      await clearDocs(payload, collection, { tenant: { equals: tenantID } })
     }
 
     payload.logger.info(`- Seeding demo author and user...`)
@@ -184,27 +236,27 @@ export const seed = async ({
     const [image1Doc, image2Doc, image3Doc, imageHomeDoc, image4Doc] = await Promise.all([
       payload.create({
         collection: 'media',
-        data: image1,
+        data: { ...image1, tenant: tenantID },
         file: image1File
       }),
       payload.create({
         collection: 'media',
-        data: image2,
+        data: { ...image2, tenant: tenantID },
         file: image2File
       }),
       payload.create({
         collection: 'media',
-        data: image3,
+        data: { ...image3, tenant: tenantID },
         file: image3File
       }),
       payload.create({
         collection: 'media',
-        data: image2,
+        data: { ...image2, tenant: tenantID },
         file: hero1File
       }),
       payload.create({
         collection: 'media',
-        data: image4,
+        data: { ...image4, tenant: tenantID },
         file: vendureFile
       })
     ])
@@ -224,48 +276,18 @@ export const seed = async ({
       demoAuthorID = `"${demoAuthorID}"`
     }
 
-    // Create categories
+    // Categories are shared between tenants, so reuse existing ones
     payload.logger.info(`- Seeding categories...`)
     const [technologyCategory, newsCategory, financeCategory] = await Promise.all([
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'Technology'
-        }
-      }),
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'News'
-        }
-      }),
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'Finance'
-        }
-      })
+      findOrCreateCategory(payload, 'Technology'),
+      findOrCreateCategory(payload, 'News'),
+      findOrCreateCategory(payload, 'Finance')
     ])
 
     await Promise.all([
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'Design'
-        }
-      }),
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'Software'
-        }
-      }),
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: 'Engineering'
-        }
-      })
+      findOrCreateCategory(payload, 'Design'),
+      findOrCreateCategory(payload, 'Software'),
+      findOrCreateCategory(payload, 'Engineering')
     ])
 
     // Create posts
@@ -276,7 +298,7 @@ export const seed = async ({
     const post1Doc = await payload.create({
       collection: 'posts',
       data: JSON.parse(
-        JSON.stringify({ ...post1, categories: [technologyCategory.id] })
+        JSON.stringify({ ...post1, categories: [technologyCategory.id], tenant: tenantID })
           .replace(/"\{\{IMAGE_1\}\}"/g, String(image1ID))
           .replace(/"\{\{IMAGE_2\}\}"/g, String(image2ID))
           .replace(/"\{\{AUTHOR\}\}"/g, String(demoAuthorID))
@@ -286,7 +308,7 @@ export const seed = async ({
     const post2Doc = await payload.create({
       collection: 'posts',
       data: JSON.parse(
-        JSON.stringify({ ...post2, categories: [newsCategory.id] })
+        JSON.stringify({ ...post2, categories: [newsCategory.id], tenant: tenantID })
           .replace(/"\{\{IMAGE_1\}\}"/g, String(image2ID))
           .replace(/"\{\{IMAGE_2\}\}"/g, String(image3ID))
           .replace(/"\{\{AUTHOR\}\}"/g, String(demoAuthorID))
@@ -296,7 +318,7 @@ export const seed = async ({
     const post3Doc = await payload.create({
       collection: 'posts',
       data: JSON.parse(
-        JSON.stringify({ ...post3, categories: [financeCategory.id] })
+        JSON.stringify({ ...post3, categories: [financeCategory.id], tenant: tenantID })
           .replace(/"\{\{IMAGE_1\}\}"/g, String(image3ID))
           .replace(/"\{\{IMAGE_2\}\}"/g, String(image1ID))
           .replace(/"\{\{AUTHOR\}\}"/g, String(demoAuthorID))
@@ -306,19 +328,19 @@ export const seed = async ({
     const post4Doc = await payload.create({
       collection: 'posts',
       data: JSON.parse(
-        JSON.stringify({ ...post4, categories: [technologyCategory.id] })
+        JSON.stringify({ ...post4, categories: [technologyCategory.id], tenant: tenantID })
           .replace(/"\{\{IMAGE_1\}\}"/g, String(image4ID))
           .replace(/"\{\{IMAGE_2\}\}"/g, String(image3ID))
           .replace(/"\{\{AUTHOR\}\}"/g, String(demoAuthorID))
       )
     })
 
-    // Clear any existing search documents
+    // Clear any search documents synced for the demo tenant's new posts
     await payload.delete({
       collection: 'search',
       where: {
-        id: {
-          exists: true
+        tenant: {
+          equals: tenantID
         }
       }
     })
@@ -367,7 +389,7 @@ export const seed = async ({
     await payload.create({
       collection: 'pages',
       data: JSON.parse(
-        JSON.stringify(home)
+        JSON.stringify({ ...home, tenant: tenantID })
           .replace(/"\{\{IMAGE_1\}\}"/g, String(imageHomeID))
           .replace(/"\{\{IMAGE_2\}\}"/g, String(image2ID))
       )
@@ -378,7 +400,7 @@ export const seed = async ({
 
     const contactForm = await payload.create({
       collection: 'forms',
-      data: JSON.parse(JSON.stringify(contactFormData))
+      data: JSON.parse(JSON.stringify({ ...contactFormData, tenant: tenantID }))
     })
 
     let contactFormID: number | string = contactForm.id
@@ -393,16 +415,17 @@ export const seed = async ({
     const contactPage = await payload.create({
       collection: 'pages',
       data: JSON.parse(
-        JSON.stringify(contactPageData).replace(/"\{\{CONTACT_FORM_ID\}\}"/g, String(contactFormID))
+        JSON.stringify({ ...contactPageData, tenant: tenantID }).replace(/"\{\{CONTACT_FORM_ID\}\}"/g, String(contactFormID))
       )
     })
 
-    // Update header
+    // Header and footer are per-tenant collections in this multi-tenant setup
     payload.logger.info(`- Seeding header...`)
 
-    await (payload as any).updateGlobal({
-      slug: 'header',
+    await payload.create({
+      collection: 'header',
       data: {
+        tenant: tenantID,
         navItems: [
           {
             link: {
@@ -425,13 +448,13 @@ export const seed = async ({
       }
     })
 
-    // Update footer
     payload.logger.info(`- Seeding footer...`)
 
-    await (payload as any).updateGlobal({
-      slug: 'footer',
+    await payload.create({
+      collection: 'footer',
       data: {
-        navItems: [
+        tenant: tenantID,
+        menuItems: [
           {
             link: {
               type: 'custom',

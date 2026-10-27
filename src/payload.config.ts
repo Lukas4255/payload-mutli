@@ -64,7 +64,12 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      // Railway's private network is only reachable at runtime, not during the build
+      // (which runs migrations and static generation), so only `pnpm start` uses it.
+      connectionString:
+        (process.env.PAYLOAD_SERVER_RUNTIME === 'true' && process.env.DATABASE_RUNTIME_URI) ||
+        process.env.DATABASE_URI ||
+        '',
     },
   }),
   collections: [Pages, Posts, Media, Categories, Users, Comments, Tenants, Vacancies, Header, Footer],
