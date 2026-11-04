@@ -15,6 +15,10 @@ export const payloadSecret = process.env.PAYLOAD_SECRET ?? 'playwright-secret'
 export const adminEmail = 'admin@example.com'
 export const adminPassword = 'ChangeMe123!'
 export const commentText = 'Playwright public comment awaiting approval.'
+export const contactDepartments = [
+  { name: 'Storingen & onderhoud', email: 'service@example.com' },
+  { name: 'Administratie & facturatie', email: 'administratie@example.com' },
+] as const
 export const seededPosts = [
   {
     title: 'Exploring the Power of Payload CMS',

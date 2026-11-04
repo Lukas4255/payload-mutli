@@ -4,6 +4,7 @@ import {
   adminEmail,
   adminPassword,
   commentText,
+  contactDepartments,
   seededPosts,
   targetPost,
 } from './env'
@@ -228,6 +229,52 @@ test('supports onboarding, seeding, and comment moderation', async ({ browser, p
     await publicPage.bringToFront()
     await publicPage.pause()
   }
+
+  await publicContext.close()
+})
+
+// Relies on the super-admin and demo tenant created by the onboarding test above.
+test('shows tenant departments in the contact drawer', async ({ browser, request }) => {
+  const login = await request.post('/api/users/login', {
+    data: { email: adminEmail, password: adminPassword },
+  })
+  expect(login.ok(), await login.text()).toBeTruthy()
+  const { token } = await login.json()
+  const headers = { Authorization: `JWT ${token}` }
+
+  const tenantsResponse = await request.get('/api/tenants', {
+    headers,
+    params: { depth: '0', limit: '1', 'where[slug][equals]': 'demo' },
+  })
+  expect(tenantsResponse.ok()).toBeTruthy()
+  const tenantID = (await tenantsResponse.json()).docs[0]?.id
+  expect(tenantID, 'Seeded demo tenant not found').toBeTruthy()
+
+  const updateResponse = await request.patch(`/api/tenants/${tenantID}`, {
+    headers,
+    data: { contactInfo: { departments: contactDepartments } },
+  })
+  expect(updateResponse.ok(), await updateResponse.text()).toBeTruthy()
+
+  const publicContext = await browser.newContext()
+  const publicPage = await publicContext.newPage()
+
+  await publicPage.goto('/posts')
+  await publicPage.getByRole('button', { name: /contact/i }).first().click()
+
+  const drawer = publicPage.getByRole('dialog', { name: 'Contact' })
+  await expect(drawer).toBeInViewport()
+
+  for (const department of contactDepartments) {
+    await expect(drawer.getByText(department.name, { exact: true })).toBeVisible()
+    await expect(drawer.getByRole('link', { name: department.email })).toHaveAttribute(
+      'href',
+      `mailto:${department.email}`,
+    )
+  }
+
+  // Without a photo the avatar shows initials, ignoring words like "&"
+  await expect(drawer.getByText('SO', { exact: true })).toBeVisible()
 
   await publicContext.close()
 })

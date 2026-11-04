@@ -58,6 +58,7 @@ This boilerplate is a pre-configured, ready-to-deploy solution for Payload CMS a
 - **Draft Preview**: Preview unpublished content before going live
 - **SEO**: Built-in SEO optimization tools
 - **Redirects**: Easy management of URL redirects
+- **Contact drawer**: The header's Contact button opens a per-tenant drawer with e-mail, phone, company details and optional departments (name, e-mail, photo or initials), managed under *Tenants → Contact information → Afdelingen*
 - **PostgreSQL Support**: Configured for both local and production use
 - **MCP server**: `@payloadcms/plugin-mcp` exposes an MCP endpoint (see below)
 
