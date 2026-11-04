@@ -125,6 +125,45 @@ export const Tenants: CollectionConfig = {
           type: 'text',
           label: 'BTW-nummer',
         },
+        {
+          name: 'departments',
+          type: 'array',
+          label: 'Afdelingen',
+          labels: { singular: 'Afdeling', plural: 'Afdelingen' },
+          maxRows: 8,
+          admin: {
+            initCollapsed: true,
+            description:
+              'Afdelingen in het contactmenu, elk met een eigen e-mailadres. Zonder foto worden de initialen getoond.',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'name',
+                  type: 'text',
+                  label: 'Afdeling',
+                  required: true,
+                  admin: { description: 'Bijv. "Verhuur & ruimtes".' },
+                },
+                {
+                  name: 'email',
+                  type: 'email',
+                  label: 'E-mailadres',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'photo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Foto',
+              admin: { description: 'Optioneel. Een vierkante foto werkt het best (wordt rond weergegeven).' },
+            },
+          ],
+        },
       ],
     },
     {

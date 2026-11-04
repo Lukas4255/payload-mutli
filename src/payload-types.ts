@@ -310,6 +310,23 @@ export interface Tenant {
     address?: string | null;
     kvk?: string | null;
     btw?: string | null;
+    /**
+     * Afdelingen in het contactmenu, elk met een eigen e-mailadres. Zonder foto worden de initialen getoond.
+     */
+    departments?:
+      | {
+          /**
+           * Bijv. "Verhuur & ruimtes".
+           */
+          name: string;
+          email: string;
+          /**
+           * Optioneel. Een vierkante foto werkt het best (wordt rond weergegeven).
+           */
+          photo?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
   };
   /**
    * If checked, logging in is not required to read. Useful for building public pages.
@@ -2065,6 +2082,14 @@ export interface TenantsSelect<T extends boolean = true> {
         address?: T;
         kvk?: T;
         btw?: T;
+        departments?:
+          | T
+          | {
+              name?: T;
+              email?: T;
+              photo?: T;
+              id?: T;
+            };
       };
   allowPublicRead?: T;
   updatedAt?: T;

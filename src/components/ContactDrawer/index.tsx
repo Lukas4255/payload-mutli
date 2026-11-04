@@ -4,7 +4,42 @@ import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Mail, Phone } from 'lucide-react'
 import { Logo } from '@/components/Logo/Logo'
+import { Media } from '@/components/Media'
+import { cn } from '@/utilities/cn'
 import type { Tenant } from '@/payload-types'
+
+type Department = NonNullable<NonNullable<Tenant['contactInfo']>['departments']>[number]
+
+/** Up to two initials, skipping words that don't start with a letter (so "&" is ignored). */
+const getInitials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter((word) => /^\p{L}/u.test(word))
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+
+const DepartmentAvatar: React.FC<{ department: Department }> = ({ department }) => {
+  const { photo } = department
+
+  if (photo && typeof photo === 'object' && photo.url) {
+    return (
+      <span className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden">
+        <Media fill imgClassName="object-cover" resource={photo} size="48px" />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className="shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold"
+    >
+      {getInitials(department.name)}
+    </span>
+  )
+}
 
 interface ContactDrawerProps {
   open: boolean
@@ -14,6 +49,7 @@ interface ContactDrawerProps {
 
 export const ContactDrawer: React.FC<ContactDrawerProps> = ({ open, onClose, tenant }) => {
   const contact = tenant?.contactInfo
+  const departments = (contact?.departments ?? []).filter((d) => d.name?.trim() && d.email?.trim())
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -114,6 +150,34 @@ export const ContactDrawer: React.FC<ContactDrawerProps> = ({ open, onClose, ten
 
               <div className="border-t border-border" />
             </div>
+
+            {/* Departments */}
+            {departments.length > 0 && (
+              <ul className="flex flex-col mt-8">
+                {departments.map((department, i) => (
+                  <li
+                    key={department.id ?? i}
+                    className={cn(
+                      'flex items-center gap-4',
+                      i > 0 && 'pt-6',
+                      i < departments.length - 1 && 'pb-6 border-b border-dashed border-border',
+                    )}
+                  >
+                    <DepartmentAvatar department={department} />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-base">{department.name}</p>
+                      <a
+                        href={`mailto:${department.email}`}
+                        className="flex items-center gap-2 text-neutral-600 mt-0.5 hover:underline"
+                      >
+                        <Mail className="w-4 h-4 shrink-0" />
+                        <span className="break-all">{department.email}</span>
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Footer */}
